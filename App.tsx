@@ -62,7 +62,7 @@ const App: React.FC = () => {
   return (
     <div className="bg-white text-gray-800 font-sans">
       <Header currentRoute={normalizedRoute} />
-      <main>
+      <main className="font-normal">
         {page}
       </main>
       <Footer />
