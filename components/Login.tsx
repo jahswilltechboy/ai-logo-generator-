@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { GoogleIcon } from '../constants';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -6,16 +7,29 @@ const Login: React.FC = () => {
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    window.location.hash = '/';
+    window.location.hash = '/dashboard';
+  };
+
+  const handleGoogleSignIn = async () => {
+    const supabase = (window as any).supabase;
+    if (supabase?.auth?.signInWithOAuth) {
+      await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin + '/#/dashboard' } });
+      return;
+    }
+    const auth0 = (window as any).auth0;
+    if (auth0?.loginWithRedirect) {
+      await auth0.loginWithRedirect({ connection: 'google-oauth2', appState: { returnTo: '/#/dashboard' } });
+      return;
+    }
   };
 
   return (
     <section className="bg-white">
-      <div className="container mx-auto md:ml-auto md:mr-5 w-full md:max-w-[1256px] px-4 md:px-6 py-12">
-        <div className="grid md:grid-cols-2 gap-12 items-start justify-center md:m-5 md:px-5">
+      <div className="container mx-auto w-full md:max-w-[1230px] px-4 sm:px-6 pt-12 pb-12 md:pl-0 md:pr-6 flex flex-col items-center justify-center">
+        <div className="grid w-full gap-8 md:gap-12 items-center justify-center md:grid-cols-2 md:my-5 md:mx-auto md:px-5">
           <div className="max-w-xl w-full mx-auto md:mx-0 md:order-2 md:mr-5">
-            <h1 className="text-3xl font-bold text-gray-800 mb-6">Welcome back</h1>
-            <p className="text-gray-600 mb-8">Login to continue creating stunning logos with AI.</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6">Welcome back</h1>
+            <p className="text-gray-600 mb-6 md:mb-8">Login to continue creating stunning logos with AI.</p>
 
             <form onSubmit={onSubmit} className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
               <div className="mb-4">
@@ -47,20 +61,29 @@ const Login: React.FC = () => {
               <button type="submit" className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
                 Login
               </button>
+              <div className="flex items-center my-4">
+                <span className="h-px bg-gray-200 flex-1"></span>
+                <span className="px-3 text-gray-500 text-sm">or</span>
+                <span className="h-px bg-gray-200 flex-1"></span>
+              </div>
+              <button type="button" onClick={handleGoogleSignIn} className="w-full bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg font-semibold hover:bg-gray-50 transition-colors flex items-center justify-center gap-2">
+                <GoogleIcon />
+                <span>Continue with Google</span>
+              </button>
             </form>
 
-            <div className="flex items-center justify-between mt-6 text-sm">
-              <a href="#/signup" className="text-blue-600 hover:underline">Create an account</a>
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-0 mt-6 text-sm">
+              <a href="#/signup" className="text-blue-600 hover:underline p-[3px]">Create an account</a>
               <a href="#/" className="text-gray-600 hover:text-blue-600">Back to home</a>
             </div>
           </div>
 
           <div className="hidden md:block md:order-1 md:justify-self-start max-w-lg">
-            <div className="grid grid-cols-2 gap-4">
-              <img src="https://picsum.photos/seed/fashion/400/520" alt="Fashion brand" className="rounded-2xl shadow-xl object-cover w-full h-48 lg:h-56" />
-              <img src="https://picsum.photos/seed/cardsB/400/520" alt="Business cards" className="rounded-2xl shadow-xl object-cover w-full h-48 lg:h-56" />
-              <img src="https://picsum.photos/seed/organic/400/520" alt="Organic product" className="rounded-2xl shadow-xl object-cover w-full h-48 lg:h-56" />
-              <img src="https://picsum.photos/seed/serum/400/520" alt="Serum bottle" className="rounded-2xl shadow-xl object-cover w-full h-48 lg:h-56" />
+            <div className="grid grid-cols-2 gap-4 mt-[50px] mx-auto">
+              <img src="https://picsum.photos/seed/fashion/400/520" alt="Fashion brand" className="rounded-2xl shadow-xl object-cover w-full h-[173px]" />
+              <img src="https://picsum.photos/seed/cardsB/400/520" alt="Business cards" className="rounded-2xl shadow-xl object-cover w-full h-[170px] mr-[33px]" />
+              <img src="https://picsum.photos/seed/organic/400/520" alt="Organic product" className="rounded-2xl shadow-xl object-cover w-full h-[165px]" />
+              <img src="https://picsum.photos/seed/serum/400/520" alt="Serum bottle" className="rounded-2xl shadow-xl object-cover w-full h-[163px] -mt-[1px]" />
             </div>
           </div>
         </div>

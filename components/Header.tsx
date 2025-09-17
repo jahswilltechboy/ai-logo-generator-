@@ -5,19 +5,20 @@ const Header: React.FC<{ currentRoute?: string }> = ({ currentRoute = '/' }) => 
   const [mobileOpen, setMobileOpen] = useState(false);
   const isLogin = currentRoute === '/login';
   const isSignup = currentRoute === '/signup';
+  const isDashboard = currentRoute === '/dashboard';
   const hideMobileNav = isLogin || isSignup;
 
   const onNavClick = () => setMobileOpen(false);
 
   return (
     <header className="bg-white sticky top-0 z-50 border-b border-gray-200">
-      <div className="container mx-auto px-4 md:px-6 py-4 flex justify-between items-center">
+      <div className="container mx-auto pl-6 pr-0 md:pl-6 md:pr-0 py-4 flex justify-between items-center">
         <div className="flex items-center space-x-8">
           <a href="#/" className="flex items-center space-x-2" onClick={onNavClick}>
             <LogoIcon />
             <span className="font-bold text-xl text-gray-800">Logome</span>
           </a>
-          <nav className="hidden md:flex items-center space-x-6">
+          <nav className={`hidden ${isDashboard ? '' : 'md:flex'} items-center space-x-6`}>
             <a href="#" className="text-gray-600 hover:text-blue-600">Logo Maker</a>
             <a href="#" className="text-gray-600 hover:text-blue-600">Brand Kit</a>
             <a href="#" className="text-gray-600 hover:text-blue-600">Logo Ideas</a>

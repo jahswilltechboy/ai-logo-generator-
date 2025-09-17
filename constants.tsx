@@ -56,3 +56,12 @@ export const EmailSignatureIcon: React.FC = () => <Icon><path strokeLinecap="rou
 export const FlyerIcon: React.FC = () => <Icon><path strokeLinecap="round" strokeLinejoin="round" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6" /></Icon>;
 export const SocialMediaIcon: React.FC = () => <Icon><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></Icon>;
 export const WebsiteIcon: React.FC = () => <Icon><path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9V3m0 18a9 9 0 009-9" /></Icon>;
+
+export const GoogleIcon: React.FC = () => (
+  <svg className="w-5 h-5" viewBox="0 0 533.5 544.3" xmlns="http://www.w3.org/2000/svg">
+    <path fill="#4285F4" d="M533.5 278.4c0-17.4-1.6-34.1-4.6-50.4H272.1v95.3h147c-6.4 34.6-25.7 63.9-54.7 83.5v69.3h88.5c51.7-47.7 80.6-118.1 80.6-197.7z"/>
+    <path fill="#34A853" d="M272.1 544.3c73.9 0 135.9-24.5 181.2-66.5l-88.5-69.3c-24.6 16.5-56.1 26-92.7 26-71.2 0-131.6-48-153.2-112.6H28.2v70.8c45 89.2 137.2 150 243.9 150z"/>
+    <path fill="#FBBC04" d="M118.9 322c-10.9-32.6-10.9-68 0-100.6V150.6H28.2c-39.5 78.9-39.5 172.8 0 251.7L118.9 322z"/>
+    <path fill="#EA4335" d="M272.1 106.2c40.2-.6 78.7 14.7 108 43.1l80.3-80.3C405.9 24.2 343.9 0 272.1 0 165.4 0 73.2 60.9 28.2 150.6l90.7 70.8c21.6-64.6 82-115.2 153.2-115.2z"/>
+  </svg>
+);

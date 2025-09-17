@@ -8,6 +8,7 @@ import DesignBundle from './components/DesignBundle';
 import BrandShowcase from './components/BrandShowcase';
 import Blog from './components/Blog';
 import Testimonials from './components/Testimonials';
+import Dashboard from './components/Dashboard';
 import FAQ from './components/FAQ';
 import CTA from './components/CTA';
 import Footer from './components/Footer';
@@ -51,6 +52,7 @@ const App: React.FC = () => {
     }
     if (normalized === '/login') return <Login />;
     if (normalized === '/signup') return <Signup />;
+    if (normalized === '/dashboard') return <Dashboard />;
     return (
       <section className="container mx-auto px-6 py-16">
         <h1 className="text-2xl font-semibold text-gray-800 mb-4">Page not found</h1>
@@ -62,7 +64,7 @@ const App: React.FC = () => {
   return (
     <div className="bg-white text-gray-800 font-sans">
       <Header currentRoute={normalizedRoute} />
-      <main>
+      <main className="font-normal">
         {page}
       </main>
       <Footer />
