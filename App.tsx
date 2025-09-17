@@ -52,6 +52,7 @@ const App: React.FC = () => {
     }
     if (normalized === '/login') return <Login />;
     if (normalized === '/signup') return <Signup />;
+    if (normalized === '/dashboard') return <Dashboard />;
     return (
       <section className="container mx-auto px-6 py-16">
         <h1 className="text-2xl font-semibold text-gray-800 mb-4">Page not found</h1>
