@@ -1,0 +1,5 @@
+{
+  "name": "AI Logo Generator",
+  "description": "A React-based web application that replicates a modern landing page for an AI-powered logo generator. It showcases features, testimonials, and brand examples with a clean, professional UI using Tailwind CSS.",
+  "requestFramePermissions": []
+}
