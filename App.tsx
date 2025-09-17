@@ -62,12 +62,12 @@ const App: React.FC = () => {
   }, [normalizedRoute]);
 
   return (
-    <div className="bg-white text-gray-800 font-sans">
+    <div className="bg-gray-900 text-white font-sans">
       <Header currentRoute={normalizedRoute} />
       <main className="font-normal">
         {page}
       </main>
-      <Footer />
+      {normalizedRoute !== '/dashboard' && <Footer />}
     </div>
   );
 };
