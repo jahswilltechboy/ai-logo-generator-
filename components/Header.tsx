@@ -18,7 +18,7 @@ const Header: React.FC<{ currentRoute?: string }> = ({ currentRoute = '/' }) => 
             <LogoIcon />
             <span className="font-bold text-xl text-gray-800">Logome</span>
           </a>
-          <nav className="hidden md:flex items-center space-x-6">
+          <nav className={`hidden ${isDashboard ? '' : 'md:flex'} items-center space-x-6`}>
             <a href="#" className="text-gray-600 hover:text-blue-600">Logo Maker</a>
             <a href="#" className="text-gray-600 hover:text-blue-600">Brand Kit</a>
             <a href="#" className="text-gray-600 hover:text-blue-600">Logo Ideas</a>
