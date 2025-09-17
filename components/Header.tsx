@@ -5,6 +5,7 @@ const Header: React.FC<{ currentRoute?: string }> = ({ currentRoute = '/' }) => 
   const [mobileOpen, setMobileOpen] = useState(false);
   const isLogin = currentRoute === '/login';
   const isSignup = currentRoute === '/signup';
+  const hideMobileNav = isLogin || isSignup;
 
   const onNavClick = () => setMobileOpen(false);
 
@@ -26,26 +27,28 @@ const Header: React.FC<{ currentRoute?: string }> = ({ currentRoute = '/' }) => 
           </nav>
         </div>
 
-        <button
-          type="button"
-          aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
-          aria-expanded={mobileOpen}
-          className="md:hidden inline-flex items-center justify-center p-2 rounded-lg border border-gray-200 text-gray-700 hover:text-blue-600 hover:border-blue-300"
-          onClick={() => setMobileOpen((v) => !v)}
-        >
-          {mobileOpen ? (
-            <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          ) : (
-            <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="3" y1="6" x2="21" y2="6" />
-              <line x1="3" y1="12" x2="21" y2="12" />
-              <line x1="3" y1="18" x2="21" y2="18" />
-            </svg>
-          )}
-        </button>
+        {!hideMobileNav && (
+          <button
+            type="button"
+            aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={mobileOpen}
+            className="md:hidden inline-flex items-center justify-center p-2 rounded-lg border border-gray-200 text-gray-700 hover:text-blue-600 hover:border-blue-300"
+            onClick={() => setMobileOpen((v) => !v)}
+          >
+            {mobileOpen ? (
+              <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            ) : (
+              <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
+            )}
+          </button>
+        )}
 
         <div className="hidden md:flex items-center space-x-4">
           {!isLogin && (
@@ -59,7 +62,7 @@ const Header: React.FC<{ currentRoute?: string }> = ({ currentRoute = '/' }) => 
         </div>
       </div>
 
-      {mobileOpen && (
+      {mobileOpen && !hideMobileNav && (
         <div className="md:hidden border-t border-gray-200">
           <div className="container mx-auto px-4 md:px-6 pb-4">
             <nav className="pt-3 grid gap-3">
