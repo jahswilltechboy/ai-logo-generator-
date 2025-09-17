@@ -13,7 +13,7 @@ const Signup: React.FC = () => {
 
   return (
     <section className="bg-white">
-      <div className="container mx-auto px-6 py-12 max-w-xl">
+      <div className="container mx-auto px-4 md:px-6 py-12 max-w-xl">
         <h1 className="text-3xl font-bold text-gray-800 mb-6">Create your account</h1>
         <p className="text-gray-600 mb-8">Join thousands using AI to generate professional logos.</p>
 

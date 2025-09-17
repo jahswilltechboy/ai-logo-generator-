@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 const images = [
@@ -13,10 +12,10 @@ const images = [
 const BrandShowcase: React.FC = () => {
   return (
     <section className="bg-white py-20">
-      <div className="container mx-auto px-6 text-center">
+      <div className="container mx-auto px-4 md:px-6 text-center">
         <h2 className="text-4xl font-bold text-gray-900">Cool brands designed with Logome</h2>
         <p className="text-lg text-gray-600 mt-4">Logome's AI logo maker is trusted by 500.000+ businesses worldwide.</p>
-        <div className="mt-12 columns-2 md:columns-3 gap-4">
+        <div className="mt-12 columns-1 sm:columns-2 md:columns-3 gap-4">
           {images.map((image, index) => (
             <img key={index} className="w-full h-auto mb-4 rounded-lg shadow-lg break-inside-avoid" src={image.src} alt={image.alt} />
           ))}

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { BrandKitIcon, BusinessCardIcon, PosterIcon, SocialMediaPostIcon, EmailSignatureIcon, FlyerIcon, SocialMediaIcon, WebsiteIcon, AILogoGeneratorIcon } from '../constants';
 
@@ -18,7 +17,7 @@ const tools = [
 const DesignBundle: React.FC = () => {
   return (
     <section className="bg-gray-50 py-20">
-      <div className="container mx-auto px-6 text-center">
+      <div className="container mx-auto px-4 md:px-6 text-center">
         <span className="text-sm font-bold text-blue-600 bg-blue-100 px-3 py-1 rounded-full">WHAT YOU GET</span>
         <h2 className="text-4xl font-bold text-gray-900 mt-4">One design bundle for all your needs</h2>
         <p className="text-lg text-gray-600 mt-4 max-w-2xl mx-auto">Discover a wide range of tools, from logo maker to website design, ready for you to explore and experiment with.</p>
