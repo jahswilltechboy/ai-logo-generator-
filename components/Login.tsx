@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { GoogleIcon } from '../constants';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -7,6 +8,19 @@ const Login: React.FC = () => {
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     window.location.hash = '/';
+  };
+
+  const handleGoogleSignIn = async () => {
+    const supabase = (window as any).supabase;
+    if (supabase?.auth?.signInWithOAuth) {
+      await supabase.auth.signInWithOAuth({ provider: 'google' });
+      return;
+    }
+    const auth0 = (window as any).auth0;
+    if (auth0?.loginWithRedirect) {
+      await auth0.loginWithRedirect({ connection: 'google-oauth2' });
+      return;
+    }
   };
 
   return (
@@ -39,13 +53,22 @@ const Login: React.FC = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
-                  placeholder="••••••••"
+                  placeholder="••••��•••"
                   required
                 />
               </div>
 
               <button type="submit" className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
                 Login
+              </button>
+              <div className="flex items-center my-4">
+                <span className="h-px bg-gray-200 flex-1"></span>
+                <span className="px-3 text-gray-500 text-sm">or</span>
+                <span className="h-px bg-gray-200 flex-1"></span>
+              </div>
+              <button type="button" onClick={handleGoogleSignIn} className="w-full bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg font-semibold hover:bg-gray-50 transition-colors flex items-center justify-center gap-2">
+                <GoogleIcon />
+                <span>Continue with Google</span>
               </button>
             </form>
 
