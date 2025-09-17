@@ -12,7 +12,7 @@ const Header: React.FC<{ currentRoute?: string }> = ({ currentRoute = '/' }) => 
 
   return (
     <header className="bg-white sticky top-0 z-50 border-b border-gray-200">
-      <div className="container mx-auto px-4 md:px-6 py-4 flex justify-between items-center">
+      <div className="container mx-auto pl-6 pr-0 md:pl-6 md:pr-0 py-4 flex justify-between items-center">
         <div className="flex items-center space-x-8">
           <a href="#/" className="flex items-center space-x-2" onClick={onNavClick}>
             <LogoIcon />
