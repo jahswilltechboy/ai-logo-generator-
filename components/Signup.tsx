@@ -14,7 +14,7 @@ const Signup: React.FC = () => {
     <section className="bg-white">
       <div className="container mx-auto px-4 md:px-6 py-12">
         <div className="grid md:grid-cols-2 gap-12 items-center">
-          <div className="max-w-xl w-full mx-auto md:mx-0">
+          <div className="max-w-xl w-full mx-auto md:mx-0 md:order-2">
             <h1 className="text-3xl font-bold text-gray-800 mb-6">Create your account</h1>
             <p className="text-gray-600 mb-8">Join thousands using AI to generate professional logos.</p>
 
@@ -69,7 +69,7 @@ const Signup: React.FC = () => {
             </div>
           </div>
 
-          <div className="hidden md:block">
+          <div className="hidden md:block md:order-1">
             <div className="grid grid-cols-2 gap-4">
               <img src="https://picsum.photos/seed/cardsW/400/520" alt="Brand stationery" className="rounded-2xl shadow-xl object-cover w-full h-full" />
               <img src="https://picsum.photos/seed/super/400/520" alt="Packaging" className="rounded-2xl shadow-xl object-cover w-full h-full" />
