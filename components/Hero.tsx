@@ -1,11 +1,10 @@
-
 import React from 'react';
 import { ProductHuntIcon, DesignToolsIcon } from '../constants';
 
 const Hero: React.FC = () => {
   return (
     <section className="bg-white py-20">
-      <div className="container mx-auto px-6 text-center flex flex-col items-center">
+      <div className="container mx-auto px-4 md:px-6 text-center flex flex-col items-center">
         <div className="md:flex md:items-start md:space-x-12">
           <div className="md:w-1/2 md:text-left mb-10 md:mb-0">
             <span className="text-sm font-bold text-teal-500 bg-teal-100 px-3 py-1 rounded-full">AI LOGO GENERATOR</span>
@@ -19,7 +18,7 @@ const Hero: React.FC = () => {
             <button className="bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold mt-8 hover:bg-blue-700 transition-colors text-lg">
               Make a logo
             </button>
-            <div className="mt-8 flex justify-center md:justify-start space-x-4">
+            <div className="mt-8 flex flex-col sm:flex-row justify-center md:justify-start gap-4">
               <div className="flex items-center p-4 border border-gray-200 rounded-lg bg-white">
                 <ProductHuntIcon />
                 <div className="ml-3 text-left">
@@ -36,7 +35,7 @@ const Hero: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="md:w-1/2 grid grid-cols-3 gap-4">
+          <div className="md:w-1/2 grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
               <img src="https://picsum.photos/seed/fashion/200/280" alt="Fashion brand" className="rounded-lg shadow-lg object-cover w-full h-full" />
               <img src="https://picsum.photos/seed/cardsB/200/280" alt="Business cards" className="rounded-lg shadow-lg object-cover w-full h-full" />
               <img src="https://picsum.photos/seed/cardsW/200/280" alt="White cards" className="rounded-lg shadow-lg object-cover w-full h-full" />

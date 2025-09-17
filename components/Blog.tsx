@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 const blogPosts = [
@@ -44,7 +43,7 @@ const BlogCard: React.FC<typeof blogPosts[0]> = ({ title, category, readTime, im
 const Blog: React.FC = () => {
   return (
     <section className="bg-gray-50 py-20">
-      <div className="container mx-auto px-6 text-center">
+      <div className="container mx-auto px-4 md:px-6 text-center">
         <h2 className="text-4xl font-bold text-gray-900">Learn about logo design and branding</h2>
         <p className="text-lg text-gray-600 mt-4">Insightful graphic design and business branding blog with guides and tips for professionals and newbies.</p>
         <div className="mt-12 grid md:grid-cols-3 gap-8">

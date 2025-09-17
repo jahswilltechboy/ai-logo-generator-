@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 const testimonials = [
@@ -55,7 +54,7 @@ const TestimonialCard: React.FC<typeof testimonials[0]> = ({ name, title, avatar
 const Testimonials: React.FC = () => {
   return (
     <section className="bg-white py-20">
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-4 md:px-6">
         <h2 className="text-4xl font-bold text-gray-900 text-center">Customers Experience</h2>
         <div className="mt-12 grid md:grid-cols-3 gap-8">
           {testimonials.map((testimonial, index) => (

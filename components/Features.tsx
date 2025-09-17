@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { CheckIcon } from '../constants';
 
@@ -29,7 +28,7 @@ const FeatureBlock: React.FC<{
         </button>
       </div>
       <div className="md:w-1/2">
-        <img src={imageUrl} alt={title} className="rounded-2xl shadow-xl" />
+        <img src={imageUrl} alt={title} className="w-full rounded-2xl shadow-xl" />
       </div>
     </div>
   );
@@ -38,9 +37,9 @@ const FeatureBlock: React.FC<{
 const Features: React.FC = () => {
   return (
     <section className="bg-white py-24">
-      <div className="container mx-auto px-6 space-y-24">
+      <div className="container mx-auto px-4 md:px-6 space-y-24">
         <div className="text-center">
-            <h2 className="text-4xl font-bold text-gray-900">Easy way to design logo for your new business</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">Easy way to design logo for your new business</h2>
         </div>
 
         <FeatureBlock
