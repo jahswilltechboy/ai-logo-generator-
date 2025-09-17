@@ -8,6 +8,7 @@ import DesignBundle from './components/DesignBundle';
 import BrandShowcase from './components/BrandShowcase';
 import Blog from './components/Blog';
 import Testimonials from './components/Testimonials';
+import Dashboard from './components/Dashboard';
 import FAQ from './components/FAQ';
 import CTA from './components/CTA';
 import Footer from './components/Footer';
