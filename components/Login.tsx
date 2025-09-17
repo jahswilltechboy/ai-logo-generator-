@@ -11,7 +11,7 @@ const Login: React.FC = () => {
 
   return (
     <section className="bg-white">
-      <div className="container mx-auto md:ml-auto md:mr-5 w-full md:max-w-[1230px] px-4 md:px-6 py-12 flex flex-col items-center justify-center">
+      <div className="container mx-auto w-full md:max-w-[1230px] pt-12 pb-12 pr-6 pl-0 flex flex-col items-center justify-center">
         <div className="grid md:grid-cols-2 gap-12 items-center justify-center md:my-5 md:mx-auto md:px-5">
           <div className="max-w-xl w-full mx-auto md:mx-0 md:order-2 md:mr-5">
             <h1 className="text-3xl font-bold text-gray-800 mb-6">Welcome back</h1>
