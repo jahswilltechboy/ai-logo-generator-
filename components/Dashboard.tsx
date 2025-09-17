@@ -87,13 +87,13 @@ const Dashboard: React.FC = () => {
             <div>
               <SidebarItem 
                 icon={<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>}
-                label="Explore" 
+                label="Business Plan" 
                 hasSubmenu={true}
               />
               <div className="ml-8 mt-2 space-y-1">
-                <div className="text-sm text-gray-500 py-1">Creations</div>
-                <div className="text-sm text-gray-500 py-1">Users</div>
-                <div className="text-sm text-gray-500 py-1">Models</div>
+                <div className="text-sm text-gray-500 py-1">Executive Summary</div>
+                <div className="text-sm text-gray-500 py-1">Market Analysis</div>
+                <div className="text-sm text-gray-500 py-1">Financial Projections</div>
               </div>
             </div>
 
