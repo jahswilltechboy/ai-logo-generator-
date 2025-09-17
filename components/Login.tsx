@@ -7,18 +7,18 @@ const Login: React.FC = () => {
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    window.location.hash = '/';
+    window.location.hash = '/dashboard';
   };
 
   const handleGoogleSignIn = async () => {
     const supabase = (window as any).supabase;
     if (supabase?.auth?.signInWithOAuth) {
-      await supabase.auth.signInWithOAuth({ provider: 'google' });
+      await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin + '/#/dashboard' } });
       return;
     }
     const auth0 = (window as any).auth0;
     if (auth0?.loginWithRedirect) {
-      await auth0.loginWithRedirect({ connection: 'google-oauth2' });
+      await auth0.loginWithRedirect({ connection: 'google-oauth2', appState: { returnTo: '/#/dashboard' } });
       return;
     }
   };
@@ -53,7 +53,7 @@ const Login: React.FC = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
-                  placeholder="••••��•••"
+                  placeholder="••••••••"
                   required
                 />
               </div>
