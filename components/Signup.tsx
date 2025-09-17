@@ -63,7 +63,7 @@ const Signup: React.FC = () => {
         </form>
 
         <div className="flex items-center justify-between mt-6 text-sm">
-          <a href="#/login" className="text-blue-600 hover:underline">Already have an account? Login</a>
+          <a href="#/login" className="text-blue-600 hover:underline">Already have an account? </a>
           <a href="#/" className="text-gray-600 hover:text-blue-600">Back to home</a>
         </div>
       </div>
