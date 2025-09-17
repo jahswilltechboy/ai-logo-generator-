@@ -51,13 +51,13 @@ const Header: React.FC<{ currentRoute?: string }> = ({ currentRoute = '/' }) => 
         )}
 
         <div className="hidden md:flex items-center space-x-4">
-          {!isLogin && (
-            <a href="#/login" className="text-gray-600 hover:text-blue-600">Login</a>
-          )}
-          {!isSignup && (
-            <a href="#/signup" className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
-              Try for FREE
-            </a>
+          {!hideMobileNav && (
+            <>
+              <a href="#/login" className="text-gray-600 hover:text-blue-600">Login</a>
+              <a href="#/signup" className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                Try for FREE
+              </a>
+            </>
           )}
         </div>
       </div>
