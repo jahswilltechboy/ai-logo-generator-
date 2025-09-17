@@ -65,21 +65,3 @@ export const GoogleIcon: React.FC = () => (
     <path fill="#EA4335" d="M272.1 106.2c40.2-.6 78.7 14.7 108 43.1l80.3-80.3C405.9 24.2 343.9 0 272.1 0 165.4 0 73.2 60.9 28.2 150.6l90.7 70.8c21.6-64.6 82-115.2 153.2-115.2z"/>
   </svg>
 );
-
-export const UserIcon: React.FC = () => (
-  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-  </svg>
-);
-
-export const NotificationIcon: React.FC = () => (
-  <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5zM10.07 2.82l3.93 3.93M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-  </svg>
-);
-
-export const UpgradeIcon: React.FC = () => (
-  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-  </svg>
-);
