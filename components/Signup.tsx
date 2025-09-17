@@ -12,9 +12,9 @@ const Signup: React.FC = () => {
 
   return (
     <section className="bg-white">
-      <div className="container mx-auto px-4 md:px-6 py-12">
-        <div className="grid md:grid-cols-2 gap-12 items-start">
-          <div className="max-w-xl w-full mx-auto md:mx-0 md:order-2">
+      <div className="container mx-auto w-full md:max-w-[1230px] pt-12 pb-12 pr-6 pl-0 flex flex-col items-center justify-center">
+        <div className="grid md:grid-cols-2 gap-12 items-center justify-center md:my-5 md:mx-auto md:px-5">
+          <div className="max-w-xl w-full mx-auto md:mx-0 md:order-2 md:mr-5">
             <h1 className="text-3xl font-bold text-gray-800 mb-6">Create your account</h1>
             <p className="text-gray-600 mb-8">Join thousands using AI to generate professional logos.</p>
 
@@ -64,17 +64,17 @@ const Signup: React.FC = () => {
             </form>
 
             <div className="flex items-center justify-between mt-6 text-sm">
-              <a href="#/login" className="text-blue-600 hover:underline">Already have an account? </a>
+              <a href="#/login" className="text-blue-600 hover:underline p-[3px]">Already have an account? </a>
               <a href="#/" className="text-gray-600 hover:text-blue-600">Back to home</a>
             </div>
           </div>
 
           <div className="hidden md:block md:order-1 md:justify-self-start max-w-lg">
-            <div className="grid grid-cols-2 gap-4">
-              <img src="https://picsum.photos/seed/cardsW/400/520" alt="Brand stationery" className="rounded-2xl shadow-xl object-cover w-full h-48 lg:h-56" />
-              <img src="https://picsum.photos/seed/super/400/520" alt="Packaging" className="rounded-2xl shadow-xl object-cover w-full h-48 lg:h-56" />
-              <img src="https://picsum.photos/seed/nature/400/520" alt="Organic product" className="rounded-2xl shadow-xl object-cover w-full h-48 lg:h-56" />
-              <img src="https://picsum.photos/seed/serial/400/520" alt="Bottle design" className="rounded-2xl shadow-xl object-cover w-full h-48 lg:h-56" />
+            <div className="grid grid-cols-2 gap-4 mt-[50px] mx-auto">
+              <img src="https://picsum.photos/seed/cardsW/400/520" alt="Brand stationery" className="rounded-2xl shadow-xl object-cover w-full h-[173px]" />
+              <img src="https://picsum.photos/seed/super/400/520" alt="Packaging" className="rounded-2xl shadow-xl object-cover w-full h-[170px] mr-[33px]" />
+              <img src="https://picsum.photos/seed/nature/400/520" alt="Organic product" className="rounded-2xl shadow-xl object-cover w-full h-[165px]" />
+              <img src="https://picsum.photos/seed/serial/400/520" alt="Bottle design" className="rounded-2xl shadow-xl object-cover w-full h-[163px] -mt-[1px]" />
             </div>
           </div>
         </div>
