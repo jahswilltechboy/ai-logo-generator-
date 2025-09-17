@@ -29,8 +29,10 @@ const App: React.FC = () => {
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
 
+  const normalizedRoute = (route.replace(/\/$/, '') || '/');
+
   const page = useMemo(() => {
-    const normalized = route.replace(/\/$/, '');
+    const normalized = normalizedRoute;
     if (normalized === '' || normalized === '/') {
       return (
         <>
@@ -55,11 +57,11 @@ const App: React.FC = () => {
         <a href="#/" className="text-blue-600 hover:underline">Go back home</a>
       </section>
     );
-  }, [route]);
+  }, [normalizedRoute]);
 
   return (
     <div className="bg-white text-gray-800 font-sans">
-      <Header />
+      <Header currentRoute={normalizedRoute} />
       <main>
         {page}
       </main>
