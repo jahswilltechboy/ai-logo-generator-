@@ -91,9 +91,13 @@ const Dashboard: React.FC = () => {
                 hasSubmenu={true}
               />
               <div className="ml-8 mt-2 space-y-1">
-                <div className="text-sm text-gray-500 py-1">Executive Summary</div>
-                <div className="text-sm text-gray-500 py-1">Market Analysis</div>
-                <div className="text-sm text-gray-500 py-1">Financial Projections</div>
+                <div className="text-sm text-gray-500 py-1">AI Logo Generator</div>
+                <div className="text-sm text-gray-500 py-1">Brand Kit</div>
+                <div className="text-sm text-gray-500 py-1">Business Cards Generator</div>
+                <div className="text-sm text-gray-500 py-1">Poster Generator</div>
+                <div className="text-sm text-gray-500 py-1">Social Media Profile Generator</div>
+                <div className="text-sm text-gray-500 py-1">Flyer</div>
+                <div className="text-sm text-gray-500 py-1">Premium Website</div>
               </div>
             </div>
 
