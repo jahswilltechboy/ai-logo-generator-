@@ -5,6 +5,7 @@ const Header: React.FC<{ currentRoute?: string }> = ({ currentRoute = '/' }) => 
   const [mobileOpen, setMobileOpen] = useState(false);
   const isLogin = currentRoute === '/login';
   const isSignup = currentRoute === '/signup';
+  const isDashboard = currentRoute === '/dashboard';
   const hideMobileNav = isLogin || isSignup;
 
   const onNavClick = () => setMobileOpen(false);
