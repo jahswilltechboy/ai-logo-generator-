@@ -12,11 +12,11 @@ const Signup: React.FC = () => {
 
   return (
     <section className="bg-white">
-      <div className="container mx-auto w-full md:max-w-[1230px] pt-12 pb-12 pr-6 pl-0 flex flex-col items-center justify-center">
-        <div className="grid md:grid-cols-2 gap-12 items-center justify-center md:my-5 md:mx-auto md:px-5">
+      <div className="container mx-auto w-full md:max-w-[1230px] px-4 sm:px-6 pt-12 pb-12 md:pl-0 md:pr-6 flex flex-col items-center justify-center">
+        <div className="grid w-full gap-8 md:gap-12 items-center justify-center md:grid-cols-2 md:my-5 md:mx-auto md:px-5">
           <div className="max-w-xl w-full mx-auto md:mx-0 md:order-2 md:mr-5">
-            <h1 className="text-3xl font-bold text-gray-800 mb-6">Create your account</h1>
-            <p className="text-gray-600 mb-8">Join thousands using AI to generate professional logos.</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6">Create your account</h1>
+            <p className="text-gray-600 mb-6 md:mb-8">Join thousands using AI to generate professional logos.</p>
 
             <form onSubmit={onSubmit} className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
               <div className="mb-4">
@@ -63,7 +63,7 @@ const Signup: React.FC = () => {
               </button>
             </form>
 
-            <div className="flex items-center justify-between mt-6 text-sm">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-0 mt-6 text-sm">
               <a href="#/login" className="text-blue-600 hover:underline p-[3px]">Already have an account? </a>
               <a href="#/" className="text-gray-600 hover:text-blue-600">Back to home</a>
             </div>
