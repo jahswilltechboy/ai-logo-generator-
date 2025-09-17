@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { LogoIcon } from '../constants';
 
-const Header: React.FC = () => {
+const Header: React.FC<{ currentRoute?: string }> = ({ currentRoute = '/' }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const isLogin = currentRoute === '/login';
+  const isSignup = currentRoute === '/signup';
 
   const onNavClick = () => setMobileOpen(false);
 
@@ -46,10 +48,14 @@ const Header: React.FC = () => {
         </button>
 
         <div className="hidden md:flex items-center space-x-4">
-          <a href="#/login" className="text-gray-600 hover:text-blue-600">Login</a>
-          <a href="#/signup" className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
-            Try for FREE
-          </a>
+          {!isLogin && (
+            <a href="#/login" className="text-gray-600 hover:text-blue-600">Login</a>
+          )}
+          {!isSignup && (
+            <a href="#/signup" className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+              Try for FREE
+            </a>
+          )}
         </div>
       </div>
 
@@ -65,10 +71,14 @@ const Header: React.FC = () => {
               <a href="#" className="text-gray-700 hover:text-blue-600" onClick={onNavClick}>Reviews</a>
             </nav>
             <div className="mt-4 grid gap-3">
-              <a href="#/login" className="text-gray-700 hover:text-blue-600" onClick={onNavClick}>Login</a>
-              <a href="#/signup" className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold text-center hover:bg-blue-700 transition-colors" onClick={onNavClick}>
-                Try for FREE
-              </a>
+              {!isLogin && (
+                <a href="#/login" className="text-gray-700 hover:text-blue-600" onClick={onNavClick}>Login</a>
+              )}
+              {!isSignup && (
+                <a href="#/signup" className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold text-center hover:bg-blue-700 transition-colors" onClick={onNavClick}>
+                  Try for FREE
+                </a>
+              )}
             </div>
           </div>
         </div>
