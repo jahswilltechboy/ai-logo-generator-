@@ -76,6 +76,13 @@ const SidebarItem: React.FC<{icon: React.ReactNode; label: string; active?: bool
 const Dashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('Image Gen');
   const [prompt, setPrompt] = useState('');
+  const [showGenerationPanel, setShowGenerationPanel] = useState(false);
+  const [selectedBusinessTool, setSelectedBusinessTool] = useState('');
+
+  const handleBusinessToolClick = (tool: string) => {
+    setSelectedBusinessTool(tool);
+    setShowGenerationPanel(true);
+  };
 
   return (
     <section className="bg-gray-50 min-h-screen">
@@ -91,13 +98,13 @@ const Dashboard: React.FC = () => {
                 hasSubmenu={true}
               />
               <div className="ml-8 mt-2 space-y-1">
-                <div className="text-sm text-gray-500 py-1">AI Logo Generator</div>
-                <div className="text-sm text-gray-500 py-1">Brand Kit</div>
-                <div className="text-sm text-gray-500 py-1">Business Cards Generator</div>
-                <div className="text-sm text-gray-500 py-1">Poster Generator</div>
-                <div className="text-sm text-gray-500 py-1">Social Media Profile Generator</div>
-                <div className="text-sm text-gray-500 py-1">Flyer</div>
-                <div className="text-sm text-gray-500 py-1">Premium Website</div>
+                <div className="text-sm text-gray-500 py-1 cursor-pointer hover:text-blue-600" onClick={() => handleBusinessToolClick('AI Logo Generator')}>AI Logo Generator</div>
+                <div className="text-sm text-gray-500 py-1 cursor-pointer hover:text-blue-600" onClick={() => handleBusinessToolClick('Brand Kit')}>Brand Kit</div>
+                <div className="text-sm text-gray-500 py-1 cursor-pointer hover:text-blue-600" onClick={() => handleBusinessToolClick('Business Cards Generator')}>Business Cards Generator</div>
+                <div className="text-sm text-gray-500 py-1 cursor-pointer hover:text-blue-600" onClick={() => handleBusinessToolClick('Poster Generator')}>Poster Generator</div>
+                <div className="text-sm text-gray-500 py-1 cursor-pointer hover:text-blue-600" onClick={() => handleBusinessToolClick('Social Media Profile Generator')}>Social Media Profile Generator</div>
+                <div className="text-sm text-gray-500 py-1 cursor-pointer hover:text-blue-600" onClick={() => handleBusinessToolClick('Flyer')}>Flyer</div>
+                <div className="text-sm text-gray-500 py-1 cursor-pointer hover:text-blue-600" onClick={() => handleBusinessToolClick('Premium Website')}>Premium Website</div>
               </div>
             </div>
 
@@ -142,10 +149,11 @@ const Dashboard: React.FC = () => {
         {/* Main Content Area */}
         <div className="flex-1 flex">
           {/* Generation Panel */}
+          {showGenerationPanel && (
           <div className="w-80 bg-white border-r border-gray-200 p-6">
             {/* Tab Navigation */}
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-bold text-gray-900">Generate</h2>
+              <h2 className="text-lg font-bold text-gray-900">{selectedBusinessTool}</h2>
               <div className="flex items-center gap-2">
                 <button 
                   onClick={() => setActiveTab('Image Gen')}
@@ -268,9 +276,10 @@ const Dashboard: React.FC = () => {
             </button>
             <p className="text-xs text-gray-500 text-center">4 prompts left</p>
           </div>
+          )}
 
           {/* Model Gallery */}
-          <div className="flex-1 p-6">
+          <div className={`${showGenerationPanel ? 'flex-1' : 'w-full'} p-6`}>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-gray-900">Model Gallery</h2>
               <div className="flex items-center gap-4">
