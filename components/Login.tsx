@@ -11,9 +11,9 @@ const Login: React.FC = () => {
 
   return (
     <section className="bg-white">
-      <div className="container mx-auto px-4 md:px-6 py-12">
-        <div className="grid md:grid-cols-2 gap-12 items-start">
-          <div className="max-w-xl w-full mx-auto md:mx-0 md:order-2">
+      <div className="container mx-auto md:ml-auto md:mr-5 w-full md:max-w-[1256px] px-4 md:px-6 py-12">
+        <div className="grid md:grid-cols-2 gap-12 items-start justify-center md:m-5 md:px-5">
+          <div className="max-w-xl w-full mx-auto md:mx-0 md:order-2 md:mr-5">
             <h1 className="text-3xl font-bold text-gray-800 mb-6">Welcome back</h1>
             <p className="text-gray-600 mb-8">Login to continue creating stunning logos with AI.</p>
 
