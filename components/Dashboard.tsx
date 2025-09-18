@@ -87,7 +87,6 @@ const Dashboard: React.FC = () => {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [promptsLeft, setPromptsLeft] = useState(4);
   const [isSuggesting, setIsSuggesting] = useState(false);
-  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   const handleBusinessToolClick = (tool: string) => {
     setSelectedBusinessTool(tool);
@@ -176,15 +175,6 @@ const Dashboard: React.FC = () => {
     setIsSuggesting(false);
   };
 
-  const handleCopy = (name: string, idx: number) => {
-    try {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(name);
-        setCopiedIndex(idx);
-        setTimeout(() => setCopiedIndex(null), 1200);
-      }
-    } catch {}
-  };
 
   const suggestionsLen = suggestions.length;
   const tryOffset = 0;
@@ -320,25 +310,6 @@ const Dashboard: React.FC = () => {
             >
               {isSuggesting ? 'Suggesting…' : 'Suggest'}
             </button>
-
-            {suggestions.length > 0 && (
-              <div className="mb-3">
-                <h3 className="text-sm font-semibold text-gray-800 mb-2">Suggested business names</h3>
-                <div className="grid grid-cols-1 gap-2">
-                  {suggestions.map((name, idx) => (
-                    <div key={name} className="flex items-center justify-between bg-white border border-gray-200 rounded-lg px-3 py-2">
-                      <span className="text-gray-800 font-medium">{name}</span>
-                      <button
-                        onClick={() => handleCopy(name, idx)}
-                        className="text-xs px-2 py-1 rounded bg-gray-100 text-gray-700 hover:bg-blue-100 hover:text-blue-700 border border-gray-200"
-                      >
-                        {copiedIndex === idx ? 'Copied' : 'Copy'}
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
 
             <p className="text-xs text-gray-500 text-center">{promptsLeft} prompts left</p>
           </div>
