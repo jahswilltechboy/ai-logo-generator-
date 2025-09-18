@@ -36,7 +36,7 @@ const niches = [
   'Technology', 'Fashion', 'Food & Beverage', 'Health & Wellness', 'Finance', 'Education', 'Real Estate', 'Travel', 'Beauty & Cosmetics', 'Sports & Fitness', 'Entertainment', 'Automotive', 'Home & Garden', 'E-commerce', 'Nonprofit', 'Marketing & Advertising', 'Arts & Design', 'Photography', 'Consulting', 'Legal', 'Construction', 'Agriculture', 'Gaming', 'Pets', "Children's Products"
 ];
 
-const Card: React.FC<{title: string; img: string; subtitle?: string; selected?: boolean; isPro?: boolean}> = ({ title, img, subtitle, selected, isPro }) => (
+const Card: React.FC<{title: string; img: string; subtitle?: string; selected?: boolean; isPro?: boolean; suggestedName?: string}> = ({ title, img, subtitle, selected, isPro, suggestedName }) => (
   <div className={`bg-white rounded-xl border overflow-hidden shadow-sm hover:shadow-md transition-all cursor-pointer ${selected ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200'}`}>
     <div className="relative">
       <img src={img} alt={title} className="w-full h-32 object-cover" />
@@ -53,7 +53,7 @@ const Card: React.FC<{title: string; img: string; subtitle?: string; selected?: 
     </div>
     <div className="p-3">
       {subtitle && <p className="text-xs font-semibold text-blue-600 mb-1">{subtitle}</p>}
-      <h3 className="text-sm font-semibold text-gray-800">{title}</h3>
+      <h3 className="text-sm font-semibold text-gray-800">{suggestedName || title}</h3>
     </div>
   </div>
 );
@@ -173,6 +173,12 @@ const Dashboard: React.FC = () => {
       }
     } catch {}
   };
+
+  const suggestionsLen = suggestions.length;
+  const tryOffset = 0;
+  const communityOffset = models.length;
+  const additionalOffset = models.length + communityModels.length;
+  const exclusiveOffset = models.length + communityModels.length + additionalModels.length;
 
   return (
     <section className="bg-gray-50 min-h-screen">
@@ -350,7 +356,14 @@ const Dashboard: React.FC = () => {
               <h3 className="text-sm font-semibold text-gray-700 mb-4">Try these</h3>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 {models.map((model, index) => (
-                  <Card key={index} title={model.title} img={model.img} subtitle={model.tag} selected={model.selected} />
+                  <Card
+                    key={index}
+                    title={model.title}
+                    img={model.img}
+                    subtitle={model.tag}
+                    selected={model.selected}
+                    suggestedName={suggestionsLen ? suggestions[(tryOffset + index) % suggestionsLen] : undefined}
+                  />
                 ))}
               </div>
             </div>
@@ -362,7 +375,12 @@ const Dashboard: React.FC = () => {
               </h3>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 {communityModels.map((model, index) => (
-                  <Card key={index} title={model.title} img={model.img} />
+                  <Card
+                    key={index}
+                    title={model.title}
+                    img={model.img}
+                    suggestedName={suggestionsLen ? suggestions[(communityOffset + index) % suggestionsLen] : undefined}
+                  />
                 ))}
               </div>
             </div>
@@ -371,7 +389,12 @@ const Dashboard: React.FC = () => {
             <div className="mb-8">
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 {additionalModels.map((model, index) => (
-                  <Card key={index} title={model.title} img={model.img} />
+                  <Card
+                    key={index}
+                    title={model.title}
+                    img={model.img}
+                    suggestedName={suggestionsLen ? suggestions[(additionalOffset + index) % suggestionsLen] : undefined}
+                  />
                 ))}
               </div>
             </div>
@@ -381,7 +404,13 @@ const Dashboard: React.FC = () => {
               <h3 className="text-sm font-semibold text-gray-700 mb-4">Exclusive models</h3>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 {exclusiveModels.map((model, index) => (
-                  <Card key={index} title={model.title} img={model.img} isPro={model.isPro} />
+                  <Card
+                    key={index}
+                    title={model.title}
+                    img={model.img}
+                    isPro={model.isPro}
+                    suggestedName={suggestionsLen ? suggestions[(exclusiveOffset + index) % suggestionsLen] : undefined}
+                  />
                 ))}
               </div>
             </div>
