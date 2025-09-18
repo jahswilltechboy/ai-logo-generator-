@@ -137,6 +137,7 @@ const Dashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('Generate Business Name');
   const [showGenerationPanel, setShowGenerationPanel] = useState(false);
   const [selectedBusinessTool, setSelectedBusinessTool] = useState('');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   
   // Form states
   const [fullName, setFullName] = useState('');
@@ -157,6 +158,7 @@ const Dashboard: React.FC = () => {
   const handleBusinessToolClick = (tool: string) => {
     setSelectedBusinessTool(tool);
     setShowGenerationPanel(true);
+    setSidebarOpen(false);
     setStep('input');
     // Reset form when switching tools
     setFullName('');
@@ -251,9 +253,39 @@ const Dashboard: React.FC = () => {
 
   return (
     <section className="bg-gray-50 min-h-screen">
-      <div className="flex">
+      {/* Mobile quick actions */}
+      <div className="md:hidden px-4 py-3 border-b border-gray-200 bg-white flex items-center justify-between">
+        <button
+          type="button"
+          className="inline-flex items-center justify-center px-3 py-2 rounded-lg border border-gray-200 text-gray-700 hover:text-blue-600 hover:border-blue-300"
+          onClick={() => setSidebarOpen((v) => !v)}
+          aria-expanded={sidebarOpen}
+          aria-controls="dashboard-sidebar"
+        >
+          <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+          Menu
+        </button>
+        <button
+          type="button"
+          className="inline-flex items-center justify-center px-3 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700"
+          onClick={() => setShowGenerationPanel(true)}
+        >
+          Open Generator
+        </button>
+      </div>
+
+      <div className="flex relative">
+        {/* Mobile sidebar overlay */}
+        {sidebarOpen && (
+          <div className="fixed inset-0 z-40 bg-black/30 md:hidden" onClick={() => setSidebarOpen(false)} aria-hidden="true"></div>
+        )}
+
         {/* Left Sidebar */}
-        <aside className="w-64 bg-white border-r border-gray-200 min-h-screen p-4">
+        <aside id="dashboard-sidebar" className="hidden md:block w-64 bg-white border-r border-gray-200 min-h-screen p-4">
           <div className="space-y-6">
             {/* Explore Section */}
             <div>
@@ -311,304 +343,344 @@ const Dashboard: React.FC = () => {
           </div>
         </aside>
 
+        {/* Mobile off-canvas sidebar */}
+        <aside className={`md:hidden fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-gray-200 p-4 transform transition-transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`} aria-hidden={!sidebarOpen}>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold text-gray-900">Menu</h2>
+            <button
+              aria-label="Close menu"
+              className="inline-flex items-center justify-center p-2 rounded-lg border border-gray-200 text-gray-700 hover:text-blue-600 hover:border-blue-300"
+              onClick={() => setSidebarOpen(false)}
+            >
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          </div>
+          <div className="space-y-6">
+            <div>
+              <SidebarItem 
+                icon={<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>}
+                label="Business Plan" 
+                hasSubmenu={true}
+              />
+              <div className="ml-8 mt-2 space-y-1">
+                <div className="text-sm text-gray-500 py-1 cursor-pointer hover:text-blue-600" onClick={() => handleBusinessToolClick('AI Logo Generator')}>AI Logo Generator</div>
+                <div className="text-sm text-gray-500 py-1 cursor-pointer hover:text-blue-600" onClick={() => handleBusinessToolClick('Brand Kit')}>Brand Kit</div>
+                <div className="text-sm text-gray-500 py-1 cursor-pointer hover:text-blue-600" onClick={() => handleBusinessToolClick('Business Cards Generator')}>Business Cards Generator</div>
+                <div className="text-sm text-gray-500 py-1 cursor-pointer hover:text-blue-600" onClick={() => handleBusinessToolClick('Poster Generator')}>Poster Generator</div>
+                <div className="text-sm text-gray-500 py-1 cursor-pointer hover:text-blue-600" onClick={() => handleBusinessToolClick('Social Media Profile Generator')}>Social Media Profile Generator</div>
+                <div className="text-sm text-gray-500 py-1 cursor-pointer hover:text-blue-600" onClick={() => handleBusinessToolClick('Flyer')}>Flyer</div>
+                <div className="text-sm text-gray-500 py-1 cursor-pointer hover:text-blue-600" onClick={() => handleBusinessToolClick('Premium Website')}>Premium Website</div>
+              </div>
+            </div>
+          </div>
+        </aside>
+
         {/* Main Content Area */}
         <div className="flex-1 flex">
           {/* Generation Panel */}
           {showGenerationPanel && (
-            <div className="w-96 bg-white border-r border-gray-200 flex flex-col">
-              {/* Header */}
-              <div className="p-6 border-b border-gray-200">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-bold text-gray-900">AI Logo Generator</h2>
-                  <button
-                    onClick={() => setShowGenerationPanel(false)}
-                    className="text-gray-400 hover:text-gray-600 transition-colors"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                </div>
-                
-                {/* Progress Steps */}
-                <div className="flex items-center space-x-2 mb-4">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold ${
-                    step === 'input' ? 'bg-blue-600 text-white' : 
-                    step === 'suggestions' || step === 'logo' ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-600'
-                  }`}>
-                    1
-                  </div>
-                  <div className={`flex-1 h-1 rounded ${
-                    step === 'suggestions' || step === 'logo' ? 'bg-green-500' : 'bg-gray-200'
-                  }`}></div>
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold ${
-                    step === 'suggestions' ? 'bg-blue-600 text-white' : 
-                    step === 'logo' ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-600'
-                  }`}>
-                    2
-                  </div>
-                  <div className={`flex-1 h-1 rounded ${
-                    step === 'logo' ? 'bg-green-500' : 'bg-gray-200'
-                  }`}></div>
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold ${
-                    step === 'logo' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'
-                  }`}>
-                    3
-                  </div>
-                </div>
-
-                {/* Tab Navigation */}
-                <div className="flex bg-gray-100 rounded-lg p-1">
-                  <button
-                    onClick={() => setActiveTab('Generate Business Name')}
-                    className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                      activeTab === 'Generate Business Name' 
-                        ? 'bg-white text-blue-600 shadow-sm' 
-                        : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                  >
-                    Generate Name
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('Use Existing Name')}
-                    className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                      activeTab === 'Use Existing Name' 
-                        ? 'bg-white text-blue-600 shadow-sm' 
-                        : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                  >
-                    Use Existing
-                  </button>
-                </div>
-              </div>
-
-              {/* Content */}
-              <div className="flex-1 p-6 overflow-y-auto">
-                {step === 'input' && (
-                  <div className="space-y-4">
-                    {activeTab === 'Generate Business Name' ? (
-                      <>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Your Name <span className="text-gray-400">(optional)</span>
-                          </label>
-                          <input
-                            type="text"
-                            value={fullName}
-                            onChange={(e) => setFullName(e.target.value)}
-                            placeholder="e.g., John Smith"
-                            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Business Description <span className="text-red-500">*</span>
-                          </label>
-                          <textarea
-                            rows={4}
-                            value={businessDescription}
-                            onChange={(e) => setBusinessDescription(e.target.value)}
-                            placeholder="Describe what your business does, your target audience, and what makes you unique..."
-                            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent resize-none"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Industry/Niche <span className="text-gray-400">(optional)</span>
-                          </label>
-                          <select
-                            value={niche}
-                            onChange={(e) => setNiche(e.target.value)}
-                            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                          >
-                            <option value="">Select an industry</option>
-                            {niches.map((n) => (
-                              <option key={n} value={n}>{n}</option>
-                            ))}
-                          </select>
-                        </div>
-
-                        <button
-                          onClick={handleGenerateNames}
-                          disabled={isGenerating || (!fullName.trim() && !businessDescription.trim())}
-                          className={`w-full text-white text-base font-semibold px-4 py-3 rounded-lg transition-colors ${
-                            isGenerating || (!fullName.trim() && !businessDescription.trim())
-                              ? 'bg-gray-400 cursor-not-allowed' 
-                              : 'bg-blue-600 hover:bg-blue-700'
-                          }`}
-                        >
-                          {isGenerating ? (
-                            <div className="flex items-center justify-center">
-                              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                              </svg>
-                              Generating Names...
-                            </div>
-                          ) : (
-                            'Generate Business Names'
-                          )}
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Business Name <span className="text-red-500">*</span>
-                          </label>
-                          <input
-                            type="text"
-                            value={businessName}
-                            onChange={(e) => setBusinessName(e.target.value)}
-                            placeholder="Enter your existing business name"
-                            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Business Description <span className="text-red-500">*</span>
-                          </label>
-                          <textarea
-                            rows={4}
-                            value={businessDescription}
-                            onChange={(e) => setBusinessDescription(e.target.value)}
-                            placeholder="Describe what your business does, your values, and target audience..."
-                            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent resize-none"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Industry/Niche <span className="text-gray-400">(optional)</span>
-                          </label>
-                          <select
-                            value={niche}
-                            onChange={(e) => setNiche(e.target.value)}
-                            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                          >
-                            <option value="">Select an industry</option>
-                            {niches.map((n) => (
-                              <option key={n} value={n}>{n}</option>
-                            ))}
-                          </select>
-                        </div>
-
-                        <button
-                          onClick={() => setStep('logo')}
-                          disabled={!businessName.trim() || !businessDescription.trim()}
-                          className={`w-full text-white text-base font-semibold px-4 py-3 rounded-lg transition-colors ${
-                            !businessName.trim() || !businessDescription.trim()
-                              ? 'bg-gray-400 cursor-not-allowed' 
-                              : 'bg-blue-600 hover:bg-blue-700'
-                          }`}
-                        >
-                          Continue to Logo Generation
-                        </button>
-                      </>
-                    )}
-
-                    {error && (
-                      <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                        <p className="text-sm text-red-600">{error}</p>
-                      </div>
-                    )}
-
-                    <p className="text-xs text-gray-500 text-center">{promptsLeft} AI generations remaining</p>
-                  </div>
-                )}
-
-                {step === 'suggestions' && (
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-semibold text-gray-900">Choose Your Business Name</h3>
-                      <button
-                        onClick={handleBackToInput}
-                        className="text-sm text-blue-600 hover:text-blue-700 font-medium"
-                      >
-                        ← Back
-                      </button>
-                    </div>
-                    
-                    <p className="text-sm text-gray-600">Select a name that resonates with your brand:</p>
-                    
-                    <div className="space-y-2 max-h-64 overflow-y-auto">
-                      {suggestions.map((suggestion, index) => (
-                        <div
-                          key={index}
-                          onClick={() => handleSelectSuggestion(suggestion)}
-                          className={`p-3 rounded-lg border cursor-pointer transition-all ${
-                            selectedSuggestion === suggestion
-                              ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200'
-                              : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
-                          }`}
-                        >
-                          <div className="flex items-center justify-between">
-                            <span className="font-medium text-gray-900">{suggestion}</span>
-                            {selectedSuggestion === suggestion && (
-                              <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                              </svg>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
+            <>
+              {/* Mobile overlay for generator */}
+              <div className="fixed inset-0 z-40 bg-black/30 md:hidden" onClick={() => setShowGenerationPanel(false)} aria-hidden="true"></div>
+              <div className="md:w-96 bg-white border-r border-gray-200 flex flex-col fixed inset-0 z-50 md:static md:inset-auto md:z-auto">
+                {/* Header */}
+                <div className="p-6 border-b border-gray-200">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-lg font-bold text-gray-900">AI Logo Generator</h2>
                     <button
-                      onClick={handleGenerateLogo}
-                      disabled={!selectedSuggestion}
-                      className={`w-full text-white text-base font-semibold px-4 py-3 rounded-lg transition-colors ${
-                        !selectedSuggestion
-                          ? 'bg-gray-400 cursor-not-allowed' 
-                          : 'bg-blue-600 hover:bg-blue-700'
-                      }`}
+                      onClick={() => setShowGenerationPanel(false)}
+                      className="text-gray-400 hover:text-gray-600 transition-colors"
+                      aria-label="Close generator"
                     >
-                      Generate Logo for "{selectedSuggestion}"
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
                     </button>
                   </div>
-                )}
+                  
+                  {/* Progress Steps */}
+                  <div className="flex items-center space-x-2 mb-4">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold ${
+                      step === 'input' ? 'bg-blue-600 text-white' : 
+                      step === 'suggestions' || step === 'logo' ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-600'
+                    }`}>
+                      1
+                    </div>
+                    <div className={`flex-1 h-1 rounded ${
+                      step === 'suggestions' || step === 'logo' ? 'bg-green-500' : 'bg-gray-200'
+                    }`}></div>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold ${
+                      step === 'suggestions' ? 'bg-blue-600 text-white' : 
+                      step === 'logo' ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-600'
+                    }`}>
+                      2
+                    </div>
+                    <div className={`flex-1 h-1 rounded ${
+                      step === 'logo' ? 'bg-green-500' : 'bg-gray-200'
+                    }`}></div>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold ${
+                      step === 'logo' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'
+                    }`}>
+                      3
+                    </div>
+                  </div>
 
-                {step === 'logo' && (
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-semibold text-gray-900">Choose Logo Style</h3>
+                  {/* Tab Navigation */}
+                  <div className="flex bg-gray-100 rounded-lg p-1">
+                    <button
+                      onClick={() => setActiveTab('Generate Business Name')}
+                      className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                        activeTab === 'Generate Business Name' 
+                          ? 'bg-white text-blue-600 shadow-sm' 
+                          : 'text-gray-600 hover:text-gray-900'
+                      }`}
+                    >
+                      Generate Name
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('Use Existing Name')}
+                      className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                        activeTab === 'Use Existing Name' 
+                          ? 'bg-white text-blue-600 shadow-sm' 
+                          : 'text-gray-600 hover:text-gray-900'
+                      }`}
+                    >
+                      Use Existing
+                    </button>
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div className="flex-1 p-6 overflow-y-auto">
+                  {step === 'input' && (
+                    <div className="space-y-4">
+                      {activeTab === 'Generate Business Name' ? (
+                        <>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Your Name <span className="text-gray-400">(optional)</span>
+                            </label>
+                            <input
+                              type="text"
+                              value={fullName}
+                              onChange={(e) => setFullName(e.target.value)}
+                              placeholder="e.g., John Smith"
+                              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Business Description <span className="text-red-500">*</span>
+                            </label>
+                            <textarea
+                              rows={4}
+                              value={businessDescription}
+                              onChange={(e) => setBusinessDescription(e.target.value)}
+                              placeholder="Describe what your business does, your target audience, and what makes you unique..."
+                              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent resize-none"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Industry/Niche <span className="text-gray-400">(optional)</span>
+                            </label>
+                            <select
+                              value={niche}
+                              onChange={(e) => setNiche(e.target.value)}
+                              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                            >
+                              <option value="">Select an industry</option>
+                              {niches.map((n) => (
+                                <option key={n} value={n}>{n}</option>
+                              ))}
+                            </select>
+                          </div>
+
+                          <button
+                            onClick={handleGenerateNames}
+                            disabled={isGenerating || (!fullName.trim() && !businessDescription.trim())}
+                            className={`w-full text-white text-base font-semibold px-4 py-3 rounded-lg transition-colors ${
+                              isGenerating || (!fullName.trim() && !businessDescription.trim())
+                                ? 'bg-gray-400 cursor-not-allowed' 
+                                : 'bg-blue-600 hover:bg-blue-700'
+                            }`}
+                          >
+                            {isGenerating ? (
+                              <div className="flex items-center justify-center">
+                                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Generating Names...
+                              </div>
+                            ) : (
+                              'Generate Business Names'
+                            )}
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Business Name <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              value={businessName}
+                              onChange={(e) => setBusinessName(e.target.value)}
+                              placeholder="Enter your existing business name"
+                              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Business Description <span className="text-red-500">*</span>
+                            </label>
+                            <textarea
+                              rows={4}
+                              value={businessDescription}
+                              onChange={(e) => setBusinessDescription(e.target.value)}
+                              placeholder="Describe what your business does, your values, and target audience..."
+                              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent resize-none"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Industry/Niche <span className="text-gray-400">(optional)</span>
+                            </label>
+                            <select
+                              value={niche}
+                              onChange={(e) => setNiche(e.target.value)}
+                              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                            >
+                              <option value="">Select an industry</option>
+                              {niches.map((n) => (
+                                <option key={n} value={n}>{n}</option>
+                              ))}
+                            </select>
+                          </div>
+
+                          <button
+                            onClick={() => setStep('logo')}
+                            disabled={!businessName.trim() || !businessDescription.trim()}
+                            className={`w-full text-white text-base font-semibold px-4 py-3 rounded-lg transition-colors ${
+                              !businessName.trim() || !businessDescription.trim()
+                                ? 'bg-gray-400 cursor-not-allowed' 
+                                : 'bg-blue-600 hover:bg-blue-700'
+                            }`}
+                          >
+                            Continue to Logo Generation
+                          </button>
+                        </>
+                      )}
+
+                      {error && (
+                        <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                          <p className="text-sm text-red-600">{error}</p>
+                        </div>
+                      )}
+
+                      <p className="text-xs text-gray-500 text-center">{promptsLeft} AI generations remaining</p>
+                    </div>
+                  )}
+
+                  {step === 'suggestions' && (
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-semibold text-gray-900">Choose Your Business Name</h3>
+                        <button
+                          onClick={handleBackToInput}
+                          className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                        >
+                          ← Back
+                        </button>
+                      </div>
+                      
+                      <p className="text-sm text-gray-600">Select a name that resonates with your brand:</p>
+                      
+                      <div className="space-y-2 max-h-64 overflow-y-auto">
+                        {suggestions.map((suggestion, index) => (
+                          <div
+                            key={index}
+                            onClick={() => handleSelectSuggestion(suggestion)}
+                            className={`p-3 rounded-lg border cursor-pointer transition-all ${
+                              selectedSuggestion === suggestion
+                                ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200'
+                                : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="font-medium text-gray-900">{suggestion}</span>
+                              {selectedSuggestion === suggestion && (
+                                <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                </svg>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
                       <button
-                        onClick={activeTab === 'Generate Business Name' ? handleBackToSuggestions : handleBackToInput}
-                        className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                        onClick={handleGenerateLogo}
+                        disabled={!selectedSuggestion}
+                        className={`w-full text-white text-base font-semibold px-4 py-3 rounded-lg transition-colors ${
+                          !selectedSuggestion
+                            ? 'bg-gray-400 cursor-not-allowed' 
+                            : 'bg-blue-600 hover:bg-blue-700'
+                        }`}
                       >
-                        ← Back
+                        Generate Logo for "{selectedSuggestion}"
                       </button>
                     </div>
-                    
-                    <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                      <div className="flex items-start space-x-3">
-                        <svg className="w-5 h-5 text-blue-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                        </svg>
-                        <div>
-                          <p className="text-sm font-medium text-blue-900">
-                            Business: {activeTab === 'Generate Business Name' ? selectedSuggestion : businessName}
-                          </p>
-                          <p className="text-xs text-blue-700 mt-1">
-                            Select a logo style below to generate your brand identity
-                          </p>
+                  )}
+
+                  {step === 'logo' && (
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-semibold text-gray-900">Choose Logo Style</h3>
+                        <button
+                          onClick={activeTab === 'Generate Business Name' ? handleBackToSuggestions : handleBackToInput}
+                          className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                        >
+                          ← Back
+                        </button>
+                      </div>
+                      
+                      <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                        <div className="flex items-start space-x-3">
+                          <svg className="w-5 h-5 text-blue-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                          </svg>
+                          <div>
+                            <p className="text-sm font-medium text-blue-900">
+                              Business: {activeTab === 'Generate Business Name' ? selectedSuggestion : businessName}
+                            </p>
+                            <p className="text-xs text-blue-700 mt-1">
+                              Select a logo style below to generate your brand identity
+                            </p>
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    <p className="text-sm text-gray-600">Choose a style that matches your brand personality:</p>
-                  </div>
-                )}
+                      <p className="text-sm text-gray-600">Choose a style that matches your brand personality:</p>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
+            </>
           )}
 
           {/* Model Gallery */}
-          <div className={`${showGenerationPanel ? 'flex-1' : 'w-full'} p-6`}>
-            <div className="flex items-center justify-between mb-6">
+          <div className={`${showGenerationPanel ? 'flex-1' : 'w-full'} p-4 md:p-6`}>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
               <div>
                 <h2 className="text-xl font-bold text-gray-900">
                   {step === 'logo' ? 'Choose Your Logo Style' : 'Model Gallery'}
@@ -620,11 +692,11 @@ const Dashboard: React.FC = () => {
                 )}
               </div>
               <div className="flex items-center gap-4">
-                <div className="relative">
+                <div className="relative w-full md:w-auto">
                   <input 
                     type="search" 
                     placeholder="Search Models" 
-                    className="w-64 rounded-lg border border-gray-300 px-4 py-2 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-600" 
+                    className="w-full md:w-64 rounded-lg border border-gray-300 px-4 py-2 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-600" 
                   />
                   <svg className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
