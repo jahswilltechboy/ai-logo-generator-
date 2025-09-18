@@ -1,48 +1,35 @@
-interface GeminiService {
-  generateBusinessNames: (
-    fullName: string,
-    businessDescription: string,
-    niche: string,
-    count: number
-  ) => Promise<string[]>;
-  generateLogo: (
-    businessName: string,
-    businessDescription: string,
-    style: string
-  ) => Promise<string>;
+interface GeminiResponse {
+  candidates: Array<{
+    content: {
+      parts: Array<{
+        text: string;
+      }>;
+    };
+  }>;
 }
 
-const geminiService: GeminiService = {
+export class GeminiService {
+  private apiKey: string;
+  private baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
+
+  constructor(apiKey: string) {
+    this.apiKey = apiKey;
+  }
+
   async generateBusinessNames(
     fullName: string,
     businessDescription: string,
     niche: string,
     count: number = 20
   ): Promise<string[]> {
-    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-    
-    if (!apiKey) {
-      throw new Error('Gemini API key not found. Please add VITE_GEMINI_API_KEY to your environment variables.');
+    if (!this.apiKey) {
+      throw new Error('Gemini API key is required');
     }
 
+    const prompt = this.buildPrompt(fullName, businessDescription, niche, count);
+
     try {
-      const prompt = `Generate ${count} creative and professional business names based on the following information:
-      
-${fullName ? `Owner/Founder: ${fullName}` : ''}
-Business Description: ${businessDescription}
-${niche ? `Industry/Niche: ${niche}` : ''}
-
-Requirements:
-- Names should be memorable, brandable, and professional
-- Mix of different styles: descriptive, abstract, compound words, and creative combinations
-- Avoid generic terms and ensure names are unique
-- Consider domain availability potential
-- Make them suitable for modern businesses
-- Include a variety of lengths (2-4 words max)
-
-Return only the business names, one per line, without numbering or additional text.`;
-
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`, {
+      const response = await fetch(`${this.baseUrl}?key=${this.apiKey}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -63,90 +50,79 @@ Return only the business names, one per line, without numbering or additional te
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(`Gemini API error: ${response.status} ${response.statusText}. ${errorData.error?.message || ''}`);
+        throw new Error(`Gemini API error: ${response.status}`);
       }
 
-      const data = await response.json();
+      const data: GeminiResponse = await response.json();
       
-      if (!data.candidates?.[0]?.content?.parts?.[0]?.text) {
-        throw new Error('Invalid response format from Gemini API');
+      if (!data.candidates || data.candidates.length === 0) {
+        throw new Error('No suggestions generated');
       }
 
-      const generatedText = data.candidates[0].content.parts[0].text;
-      const names = generatedText
-        .split('\n')
-        .map((name: string) => name.trim())
-        .filter((name: string) => name.length > 0 && !name.match(/^\d+\.?\s*/))
-        .slice(0, count);
-
-      if (names.length === 0) {
-        throw new Error('No valid business names generated');
-      }
-
-      return names;
+      const text = data.candidates[0].content.parts[0].text;
+      return this.parseBusinessNames(text);
     } catch (error) {
       console.error('Error generating business names:', error);
-      throw error;
-    }
-  },
-
-  async generateLogo(
-    businessName: string,
-    businessDescription: string,
-    style: string
-  ): Promise<string> {
-    try {
-      const prompt = `Create a professional logo for "${businessName}". Business description: ${businessDescription}. Style: ${style}. Make it clean, modern, and suitable for business use.`;
-      
-      const response = await fetch('https://api.replicate.com/v1/predictions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Token ${import.meta.env.VITE_REPLICATE_API_TOKEN}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          version: "fofr/sdxl-niji:9f0c4c0b8d8c5c8c5c8c5c8c5c8c5c8c5c8c5c8c",
-          input: {
-            prompt: prompt,
-            width: 512,
-            height: 512,
-            num_outputs: 1,
-            scheduler: "K_EULER",
-            num_inference_steps: 20,
-            guidance_scale: 7.5,
-          }
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`Replicate API error: ${response.status}`);
-      }
-
-      const prediction = await response.json();
-      
-      // Poll for completion
-      let result = prediction;
-      while (result.status === 'starting' || result.status === 'processing') {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        const pollResponse = await fetch(`https://api.replicate.com/v1/predictions/${result.id}`, {
-          headers: {
-            'Authorization': `Token ${import.meta.env.VITE_REPLICATE_API_TOKEN}`,
-          }
-        });
-        result = await pollResponse.json();
-      }
-
-      if (result.status === 'succeeded' && result.output && result.output[0]) {
-        return result.output[0];
-      } else {
-        throw new Error('Logo generation failed');
-      }
-    } catch (error) {
-      console.error('Error generating logo:', error);
-      throw error;
+      throw new Error('Failed to generate business name suggestions');
     }
   }
-};
 
+  private buildPrompt(fullName: string, businessDescription: string, niche: string, count: number): string {
+    let prompt = `Generate ${count} creative and professional business names based on the following information:
+
+`;
+
+    if (fullName.trim()) {
+      prompt += `Owner/Founder Name: ${fullName.trim()}
+`;
+    }
+
+    if (businessDescription.trim()) {
+      prompt += `Business Description: ${businessDescription.trim()}
+`;
+    }
+
+    if (niche) {
+      prompt += `Industry/Niche: ${niche}
+`;
+    }
+
+    prompt += `
+Instructions for name generation:
+- If a founder name is provided, consider incorporating it creatively (e.g., "John's Tech Solutions", "Smith Innovations", "DoeVentures")
+- If business description is provided, extract key concepts and create names that reflect the business purpose
+- Combine the founder's name with business concepts when both are available
+- Create names that are memorable, brandable, and professional
+- Mix different naming approaches:
+  * Personal branding (using founder name)
+  * Descriptive names (based on what the business does)
+  * Abstract/creative names (inspired by the business concept)
+  * Compound words that combine relevant terms
+- Each name should be 1-4 words maximum
+- Names should be suitable for logo design and branding
+- Avoid generic or overly common names
+- Make names unique and distinctive
+
+Examples of good naming approaches:
+- Personal + Business: "Miller's Marketing Hub", "Johnson Digital"
+- Concept-based: "Pixel Perfect Studio", "Growth Catalyst"
+- Creative combinations: "TechFlow", "BrandCraft", "InnovateLab"
+
+Please provide ONLY the business names, one per line, without numbering, bullets, or additional text.`;
+
+    return prompt;
+  }
+
+  private parseBusinessNames(text: string): string[] {
+    return text
+      .split('\n')
+      .map(name => name.trim())
+      .filter(name => name.length > 0 && !name.match(/^\d+\.?\s/)) // Remove numbered items
+      .filter(name => name.length <= 50) // Reasonable length limit
+      .slice(0, 25); // Limit to 25 names max
+  }
+}
+
+// Create a singleton instance
+const geminiService = new GeminiService(import.meta.env.VITE_GEMINI_API_KEY || '');
 export default geminiService;
