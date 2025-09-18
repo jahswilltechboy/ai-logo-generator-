@@ -68,25 +68,49 @@ export class GeminiService {
   }
 
   private buildPrompt(fullName: string, businessDescription: string, niche: string, count: number): string {
-    return `Generate ${count} creative and professional business names based on the following information:
+    let prompt = `Generate ${count} creative and professional business names based on the following information:
 
-Owner Name: ${fullName || 'Not provided'}
-Business Description: ${businessDescription || 'Not provided'}
-Industry/Niche: ${niche || 'General business'}
+`;
 
-Requirements:
-- Names should be memorable, brandable, and professional
-- Consider the industry/niche when creating names
-- Mix different naming styles: descriptive, abstract, compound words, etc.
-- Avoid generic or overly common names
-- Each name should be 1-3 words maximum
+    if (fullName.trim()) {
+      prompt += `Owner/Founder Name: ${fullName.trim()}
+`;
+    }
+
+    if (businessDescription.trim()) {
+      prompt += `Business Description: ${businessDescription.trim()}
+`;
+    }
+
+    if (niche) {
+      prompt += `Industry/Niche: ${niche}
+`;
+    }
+
+    prompt += `
+Instructions for name generation:
+- If a founder name is provided, consider incorporating it creatively (e.g., "John's Tech Solutions", "Smith Innovations", "DoeVentures")
+- If business description is provided, extract key concepts and create names that reflect the business purpose
+- Combine the founder's name with business concepts when both are available
+- Create names that are memorable, brandable, and professional
+- Mix different naming approaches:
+  * Personal branding (using founder name)
+  * Descriptive names (based on what the business does)
+  * Abstract/creative names (inspired by the business concept)
+  * Compound words that combine relevant terms
+- Each name should be 1-4 words maximum
 - Names should be suitable for logo design and branding
+- Avoid generic or overly common names
+- Make names unique and distinctive
 
-Please provide ONLY the business names, one per line, without numbering, bullets, or additional text. Format example:
-TechFlow Solutions
-Digital Nexus
-Innovation Hub
-Creative Studio`;
+Examples of good naming approaches:
+- Personal + Business: "Miller's Marketing Hub", "Johnson Digital"
+- Concept-based: "Pixel Perfect Studio", "Growth Catalyst"
+- Creative combinations: "TechFlow", "BrandCraft", "InnovateLab"
+
+Please provide ONLY the business names, one per line, without numbering, bullets, or additional text.`;
+
+    return prompt;
   }
 
   private parseBusinessNames(text: string): string[] {
