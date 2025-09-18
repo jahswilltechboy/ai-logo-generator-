@@ -22,6 +22,10 @@ export class GeminiService {
     niche: string,
     count: number = 20
   ): Promise<string[]> {
+    if (!this.apiKey) {
+      throw new Error('Gemini API key is required');
+    }
+
     const prompt = this.buildPrompt(fullName, businessDescription, niche, count);
 
     try {

@@ -120,79 +120,6 @@ const Dashboard: React.FC = () => {
     setShowGenerationPanel(true);
   };
 
-  const stopwords = new Set([
-    'the','and','for','with','your','you','our','about','this','that','from','into','using','use','in','on','at','to','of','a','an','is','are','be','by','as','it','we','they','their','them','or','but'
-  ]);
-
-  const hashString = (str: string) => {
-    let h = 0;
-    for (let i = 0; i < str.length; i++) h = (h << 5) - h + str.charCodeAt(i);
-    return Math.abs(h);
-  };
-
-  const titleCase = (s: string) => s.replace(/\w\S*/g, (t) => t.charAt(0).toUpperCase() + t.slice(1).toLowerCase());
-
-  const buildSuggestions = (targetCount: number) => {
-    const base = `${fullName} ${businessDescription} ${niche}`.trim();
-    const h = hashString(base || 'default');
-
-    const parts = fullName.trim().split(/\s+/).filter(Boolean);
-    const first = parts[0] || '';
-    const last = parts[parts.length - 1] || '';
-    const initials = parts.map(p => p[0]?.toUpperCase() || '').join('');
-
-    const descWords = businessDescription
-      .toLowerCase()
-      .replace(/[^a-z0-9\s]/g, ' ')
-      .split(/\s+/)
-      .filter(w => w.length > 2 && !stopwords.has(w));
-
-    const nicheWords = (niche || '').toLowerCase().split(/\s*&\s*|\s+/).filter(Boolean);
-
-    const keywords = Array.from(new Set([...(nicheWords || []), ...descWords]));
-    const key = titleCase(keywords[0] || 'Brand');
-    const key2 = titleCase(keywords[1] || 'Studio');
-
-    const suffixes = ['Labs','Studio','Works','Hub','Co','Solutions','Space','Forge','Nest','Pulse','Craft','Collective','Designs','Factory','Partners','Group','Concepts','Dynamics'];
-    const prefixes = ['Neo','Blue','Prime','Bright','Smart','Quantum','Ever','True','Ultra','Hyper','Aero','Astra','Pixel','Vivid','Nova','Turbo','Meta','Cloud','Solid'];
-
-    const namesSet = new Set<string>();
-    const push = (s: string) => {
-      const cleaned = s.replace(/\s+/g, ' ').trim();
-      if (cleaned) namesSet.add(titleCase(cleaned));
-    };
-
-    const f = titleCase(first);
-    const l = titleCase(last);
-
-    let i = 0;
-    while (namesSet.size < targetCount && i < targetCount * 10) {
-      const sA = suffixes[(h + i) % suffixes.length];
-      const sB = suffixes[(h + i + 3) % suffixes.length];
-      const pA = prefixes[(h + i) % prefixes.length];
-      const pB = prefixes[(h + i + 5) % prefixes.length];
-      const kA = titleCase(keywords[(i) % Math.max(1, keywords.length)] || key);
-      const kB = titleCase(keywords[(i + 1) % Math.max(1, keywords.length)] || key2);
-
-      push(`${kA} ${sA}`);
-      push(`${kB} ${sB}`);
-      push(`${pA}${kA}`);
-      push(`${pB}${kB}`);
-      if (f) push(`${f} ${sB}`);
-      if (l) push(`${l} ${sA}`);
-      if (f && kA) push(`${f} ${kA}`);
-      if (l && kB) push(`${kB} ${l}`);
-      if (initials) push(`${initials} ${sA}`);
-      if (f && l) push(`${f} & ${l} ${sB}`);
-
-      // Add a numeric variant for extra uniqueness
-      push(`${kA} ${sA} ${((h + i) % 9) + 1}`);
-      i++;
-    }
-
-    return Array.from(namesSet).slice(0, targetCount);
-  };
-
   const handleSuggest = async () => {
     if (!fullName.trim() && !businessDescription.trim()) {
       setError('Please provide at least your name or business description');
@@ -201,6 +128,7 @@ const Dashboard: React.FC = () => {
 
     setIsSuggesting(true);
     setError('');
+    setSuggestions([]); // Clear previous suggestions
 
     try {
       const totalCards = models.length + communityModels.length + additionalModels.length + exclusiveModels.length;
@@ -211,24 +139,13 @@ const Dashboard: React.FC = () => {
         totalCards
       );
       
-      // If AI doesn't return enough suggestions, fill with fallback suggestions
-      if (aiSuggestions.length < totalCards) {
-        const fallbackSuggestions = buildSuggestions(totalCards - aiSuggestions.length);
-        setSuggestions([...aiSuggestions, ...fallbackSuggestions]);
-      } else {
-        setSuggestions(aiSuggestions);
-      }
+      setSuggestions(aiSuggestions);
       
       setPromptsLeft((v) => (v > 0 ? v - 1 : 0));
     } catch (err) {
       console.error('AI suggestion failed:', err);
-      setError('AI suggestion failed. Using fallback suggestions.');
-      
-      // Fallback to original logic
-      const totalCards = models.length + communityModels.length + additionalModels.length + exclusiveModels.length;
-      const list = buildSuggestions(totalCards);
-      setSuggestions(list);
-      setPromptsLeft((v) => (v > 0 ? v - 1 : 0));
+      setError('Failed to generate AI suggestions. Please check your API key and try again.');
+      setSuggestions([]);
     } finally {
       setIsSuggesting(false);
     }
