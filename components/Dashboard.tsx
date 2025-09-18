@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const models = [
   { title: 'Image 3.0', tag: 'Try these', img: 'https://picsum.photos/seed/model1/400/240', selected: true },
@@ -103,14 +103,24 @@ const SidebarItem: React.FC<{icon: React.ReactNode; label: string; active?: bool
 
 const Dashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('Suggest Business Name');
-    const [showGenerationPanel, setShowGenerationPanel] = useState(false);
+  const [showGenerationPanel, setShowGenerationPanel] = useState(false);
   const [selectedBusinessTool, setSelectedBusinessTool] = useState('');
+
+  // Suggest Business Name tab state
   const [fullName, setFullName] = useState('');
   const [businessDescription, setBusinessDescription] = useState('');
   const [niche, setNiche] = useState('');
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [promptsLeft, setPromptsLeft] = useState(4);
   const [isSuggesting, setIsSuggesting] = useState(false);
+
+  // Generate Logo tab state
+  const [selectedSuggestedName, setSelectedSuggestedName] = useState('');
+  const [businessName, setBusinessName] = useState('');
+  const [logoImageFile, setLogoImageFile] = useState<File | null>(null);
+  const [logoPreviewUrl, setLogoPreviewUrl] = useState<string>('');
+  const [isGenerating, setIsGenerating] = useState(false);
+
   const [toast, setToast] = useState('');
 
   const handleBusinessToolClick = (tool: string) => {
@@ -183,7 +193,6 @@ const Dashboard: React.FC = () => {
       if (initials) push(`${initials} ${sA}`);
       if (f && l) push(`${f} & ${l} ${sB}`);
 
-      // Add a numeric variant for extra uniqueness
       push(`${kA} ${sA} ${((h + i) % 9) + 1}`);
       i++;
     }
@@ -200,6 +209,44 @@ const Dashboard: React.FC = () => {
     setIsSuggesting(false);
   };
 
+  const onLogoFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setLogoImageFile(file);
+  };
+
+  useEffect(() => {
+    if (!logoImageFile) {
+      setLogoPreviewUrl('');
+      return;
+    }
+    const url = URL.createObjectURL(logoImageFile);
+    setLogoPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [logoImageFile]);
+
+  const chosenBusinessName = selectedSuggestedName || businessName;
+
+  const handleGenerateLogo = () => {
+    if (!chosenBusinessName && !logoImageFile) {
+      setToast('Select/enter a business name or upload an image');
+      setTimeout(() => setToast(''), 1500);
+      return;
+    }
+    if (!niche) {
+      setToast('Please select a niche');
+      setTimeout(() => setToast(''), 1500);
+      return;
+    }
+
+    setIsGenerating(true);
+    setTimeout(() => {
+      const baseMsg = chosenBusinessName ? `Generating logo for "${chosenBusinessName}"` : 'Generating logo';
+      const extra = logoImageFile ? ' with your uploaded image' : '';
+      setToast(baseMsg + extra);
+      setIsGenerating(false);
+      setTimeout(() => setToast(''), 1600);
+    }, 600);
+  };
 
   const suggestionsLen = suggestions.length;
   const tryOffset = 0;
@@ -292,51 +339,150 @@ const Dashboard: React.FC = () => {
               </button>
             </div>
 
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Full name</label>
-              <input
-                type="text"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                placeholder="John Doe"
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
-              />
-            </div>
+            {activeTab === 'Suggest Business Name' && (
+              <>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Full name</label>
+                  <input
+                    type="text"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="John Doe"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  />
+                </div>
 
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Business description</label>
-              <textarea
-                rows={4}
-                value={businessDescription}
-                onChange={(e) => setBusinessDescription(e.target.value)}
-                placeholder="Describe what your business or brand is about"
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600 resize-none"
-              />
-            </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Business description</label>
+                  <textarea
+                    rows={4}
+                    value={businessDescription}
+                    onChange={(e) => setBusinessDescription(e.target.value)}
+                    placeholder="Describe what your business or brand is about"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600 resize-none"
+                  />
+                </div>
 
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Niche</label>
-              <select
-                value={niche}
-                onChange={(e) => setNiche(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
-              >
-                <option value="">Select a niche</option>
-                {niches.map((n) => (
-                  <option key={n} value={n}>{n}</option>
-                ))}
-              </select>
-            </div>
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Niche</label>
+                  <select
+                    value={niche}
+                    onChange={(e) => setNiche(e.target.value)}
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  >
+                    <option value="">Select a niche</option>
+                    {niches.map((n) => (
+                      <option key={n} value={n}>{n}</option>
+                    ))}
+                  </select>
+                </div>
 
-            <button
-              onClick={handleSuggest}
-              disabled={isSuggesting}
-              className={`w-full text-white text-base font-bold px-4 py-3 rounded-full transition-colors mb-3 ${isSuggesting ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
-            >
-              {isSuggesting ? 'Suggesting…' : 'Suggest'}
-            </button>
+                <button
+                  onClick={handleSuggest}
+                  disabled={isSuggesting}
+                  className={`w-full text-white text-base font-bold px-4 py-3 rounded-full transition-colors mb-3 ${isSuggesting ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
+                >
+                  {isSuggesting ? 'Suggesting…' : 'Suggest'}
+                </button>
 
-            <p className="text-xs text-gray-500 text-center">{promptsLeft} prompts left</p>
+                <p className="text-xs text-gray-500 text-center">{promptsLeft} prompts left</p>
+              </>
+            )}
+
+            {activeTab === 'Generate Logo' && (
+              <>
+                {suggestions.length > 0 && (
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Use suggested business name (optional)</label>
+                    <select
+                      value={selectedSuggestedName}
+                      onChange={(e) => setSelectedSuggestedName(e.target.value)}
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                    >
+                      <option value="">Select a suggested name</option>
+                      {suggestions.map((s) => (
+                        <option key={s} value={s}>{s}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                <div className="mb-4">
+                  <div className="flex items-center gap-2 text-gray-400 text-xs uppercase">
+                    <span className="flex-1 h-px bg-gray-200" />
+                    <span>or</span>
+                    <span className="flex-1 h-px bg-gray-200" />
+                  </div>
+                </div>
+
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Upload icon or preferred image (optional)</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={onLogoFileChange}
+                    className="w-full text-sm text-gray-600"
+                  />
+                  {logoPreviewUrl && (
+                    <div className="mt-3">
+                      <img src={logoPreviewUrl} alt="Uploaded preview" className="w-full h-28 object-cover rounded-lg border border-gray-200" />
+                    </div>
+                  )}
+                </div>
+
+                <div className="mb-4">
+                  <div className="flex items-center gap-2 text-gray-400 text-xs uppercase">
+                    <span className="flex-1 h-px bg-gray-200" />
+                    <span>or</span>
+                    <span className="flex-1 h-px bg-gray-200" />
+                  </div>
+                </div>
+
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Business name</label>
+                  <input
+                    type="text"
+                    value={businessName}
+                    onChange={(e) => setBusinessName(e.target.value)}
+                    placeholder="Your business name"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Business description</label>
+                  <textarea
+                    rows={3}
+                    value={businessDescription}
+                    onChange={(e) => setBusinessDescription(e.target.value)}
+                    placeholder="Describe your business"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600 resize-none"
+                  />
+                </div>
+
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Niche</label>
+                  <select
+                    value={niche}
+                    onChange={(e) => setNiche(e.target.value)}
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  >
+                    <option value="">Select a niche</option>
+                    {niches.map((n) => (
+                      <option key={n} value={n}>{n}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <button
+                  onClick={handleGenerateLogo}
+                  disabled={isGenerating}
+                  className={`w-full text-white text-base font-bold px-4 py-3 rounded-full transition-colors ${isGenerating ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
+                >
+                  {isGenerating ? 'Generating…' : 'Generate Logo'}
+                </button>
+              </>
+            )}
           </div>
           )}
 
