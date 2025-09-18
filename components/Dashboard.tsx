@@ -84,10 +84,94 @@ const Dashboard: React.FC = () => {
   const [fullName, setFullName] = useState('');
   const [businessDescription, setBusinessDescription] = useState('');
   const [niche, setNiche] = useState('');
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [promptsLeft, setPromptsLeft] = useState(4);
+  const [isSuggesting, setIsSuggesting] = useState(false);
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   const handleBusinessToolClick = (tool: string) => {
     setSelectedBusinessTool(tool);
     setShowGenerationPanel(true);
+  };
+
+  const stopwords = new Set([
+    'the','and','for','with','your','you','our','about','this','that','from','into','using','use','in','on','at','to','of','a','an','is','are','be','by','as','it','we','they','their','them','or','but'
+  ]);
+
+  const hashString = (str: string) => {
+    let h = 0;
+    for (let i = 0; i < str.length; i++) h = (h << 5) - h + str.charCodeAt(i);
+    return Math.abs(h);
+  };
+
+  const titleCase = (s: string) => s.replace(/\w\S*/g, (t) => t.charAt(0).toUpperCase() + t.slice(1).toLowerCase());
+
+  const buildSuggestions = () => {
+    const base = `${fullName} ${businessDescription} ${niche}`.trim();
+    const h = hashString(base || 'default');
+
+    const parts = fullName.trim().split(/\s+/).filter(Boolean);
+    const first = parts[0] || '';
+    const last = parts[parts.length - 1] || '';
+    const initials = parts.map(p => p[0]?.toUpperCase() || '').join('');
+
+    const descWords = businessDescription
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, ' ')
+      .split(/\s+/)
+      .filter(w => w.length > 2 && !stopwords.has(w));
+
+    const nicheWords = (niche || '').toLowerCase().split(/\s*&\s*|\s+/).filter(Boolean);
+
+    const keywords = Array.from(new Set([...(nicheWords || []), ...descWords])).slice(0, 5);
+    const key = titleCase(keywords[0] || 'Brand');
+    const key2 = titleCase(keywords[1] || 'Studio');
+
+    const suffixes = ['Labs','Studio','Works','Hub','Co','Solutions','Space','Forge','Nest','Pulse','Craft','Collective','Designs','Factory'];
+    const prefixes = ['Neo','Blue','Prime','Bright','Smart','Quantum','Ever','True','Ultra','Hyper','Aero','Astra','Pixel','Vivid'];
+
+    const pick = (arr: string[], n: number) => arr[(h + n) % arr.length];
+
+    const namesSet = new Set<string>();
+    const push = (s: string) => namesSet.add(s.replace(/\s+/g, ' ').trim());
+
+    const f = titleCase(first);
+    const l = titleCase(last);
+    const p1 = pick(prefixes, 1);
+    const p2 = pick(prefixes, 2);
+    const s1 = pick(suffixes, 3);
+    const s2 = pick(suffixes, 4);
+
+    push(`${key} ${s1}`);
+    push(`${key2} ${s2}`);
+    if (f) push(`${f} ${s1}`);
+    if (l) push(`${l} ${s2}`);
+    if (f && key) push(`${f} ${key}`);
+    if (l && key2) push(`${key2} ${l}`);
+    push(`${p1}${key}`);
+    push(`${p2}${key2}`);
+    if (initials) push(`${initials} ${s1}`);
+    if (f && l) push(`${f} & ${l} ${pick(suffixes, 5)}`);
+
+    return Array.from(namesSet).map(titleCase).slice(0, 10);
+  };
+
+  const handleSuggest = () => {
+    setIsSuggesting(true);
+    const list = buildSuggestions();
+    setSuggestions(list);
+    setPromptsLeft((v) => (v > 0 ? v - 1 : 0));
+    setIsSuggesting(false);
+  };
+
+  const handleCopy = (name: string, idx: number) => {
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(name);
+        setCopiedIndex(idx);
+        setTimeout(() => setCopiedIndex(null), 1200);
+      }
+    } catch {}
   };
 
   return (
@@ -211,10 +295,34 @@ const Dashboard: React.FC = () => {
               </select>
             </div>
 
-            <button className="w-full bg-blue-600 text-white text-base font-bold px-4 py-3 rounded-full hover:bg-blue-700 transition-colors mb-3">
-              Suggest
+            <button
+              onClick={handleSuggest}
+              disabled={isSuggesting}
+              className={`w-full text-white text-base font-bold px-4 py-3 rounded-full transition-colors mb-3 ${isSuggesting ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
+            >
+              {isSuggesting ? 'Suggesting…' : 'Suggest'}
             </button>
-            <p className="text-xs text-gray-500 text-center">4 prompts left</p>
+
+            {suggestions.length > 0 && (
+              <div className="mb-3">
+                <h3 className="text-sm font-semibold text-gray-800 mb-2">Suggested business names</h3>
+                <div className="grid grid-cols-1 gap-2">
+                  {suggestions.map((name, idx) => (
+                    <div key={name} className="flex items-center justify-between bg-white border border-gray-200 rounded-lg px-3 py-2">
+                      <span className="text-gray-800 font-medium">{name}</span>
+                      <button
+                        onClick={() => handleCopy(name, idx)}
+                        className="text-xs px-2 py-1 rounded bg-gray-100 text-gray-700 hover:bg-blue-100 hover:text-blue-700 border border-gray-200"
+                      >
+                        {copiedIndex === idx ? 'Copied' : 'Copy'}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <p className="text-xs text-gray-500 text-center">{promptsLeft} prompts left</p>
           </div>
           )}
 
