@@ -48,9 +48,10 @@ const Card: React.FC<{
   selected?: boolean; 
   isPro?: boolean; 
   suggestedName?: string; 
+  isGeneratingLogo?: boolean;
   onCopied?: (name: string) => void;
   onSelect?: () => void;
-}> = ({ title, img, subtitle, selected, isPro, suggestedName, onCopied, onSelect }) => {
+}> = ({ title, img, subtitle, selected, isPro, suggestedName, isGeneratingLogo, onCopied, onSelect }) => {
   const [copied, setCopied] = useState(false);
   const nameToShow = suggestedName || title;
 

@@ -8,12 +8,101 @@ interface GeminiResponse {
   }>;
 }
 
+interface NanoBananaResponse {
+  id: string;
+  status: string;
+  output?: string[];
+  error?: string;
+}
+
 export class GeminiService {
   private apiKey: string;
-  private baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
+  private baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent';
+  private nanoBananaUrl = 'https://api.replicate.com/v1/predictions';
 
   constructor(apiKey: string) {
     this.apiKey = apiKey;
+  }
+
+  async generateLogo(
+    businessName: string,
+    businessDescription: string,
+    style: string = 'modern'
+  ): Promise<string> {
+    const prompt = `Create a professional logo for "${businessName}". ${businessDescription}. Style: ${style}. Clean, minimalist design suitable for business branding.`;
+    
+    try {
+      const response = await fetch(this.nanoBananaUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Token ${this.apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          version: "nano-banana-model-version", // This would be the actual model version
+          input: {
+            prompt: prompt,
+            width: 512,
+            height: 512,
+            num_outputs: 1,
+            guidance_scale: 7.5,
+            num_inference_steps: 50
+          }
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Nano Banana API error: ${response.status}`);
+      }
+
+      const prediction: NanoBananaResponse = await response.json();
+      
+      // Poll for completion
+      return await this.pollForCompletion(prediction.id);
+    } catch (error) {
+      console.error('Error generating logo:', error);
+      // Fallback to a placeholder or default logo
+      return `https://picsum.photos/seed/${encodeURIComponent(businessName)}/512/512`;
+    }
+  }
+
+  private async pollForCompletion(predictionId: string): Promise<string> {
+    const maxAttempts = 30;
+    const pollInterval = 2000; // 2 seconds
+    
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      try {
+        const response = await fetch(`${this.nanoBananaUrl}/${predictionId}`, {
+          headers: {
+            'Authorization': `Token ${this.apiKey}`,
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Polling error: ${response.status}`);
+        }
+        
+        const prediction: NanoBananaResponse = await response.json();
+        
+        if (prediction.status === 'succeeded' && prediction.output && prediction.output.length > 0) {
+          return prediction.output[0];
+        }
+        
+        if (prediction.status === 'failed') {
+          throw new Error(prediction.error || 'Logo generation failed');
+        }
+        
+        // Wait before next poll
+        await new Promise(resolve => setTimeout(resolve, pollInterval));
+      } catch (error) {
+        console.error(`Polling attempt ${attempt + 1} failed:`, error);
+        if (attempt === maxAttempts - 1) {
+          throw error;
+        }
+      }
+    }
+    
+    throw new Error('Logo generation timed out');
   }
 
   async generateBusinessNames(
