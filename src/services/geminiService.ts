@@ -1,217 +1,117 @@
-interface GeminiResponse {
-  candidates: Array<{
-    content: {
-      parts: Array<{
-        text: string;
-      }>;
-    };
-  }>;
-}
+import React, { useState } from 'react';
+import geminiService from '../src/services/geminiService';
 
-interface NanoBananaResponse {
-  id: string;
-  status: string;
-  output?: string[];
-  error?: string;
-}
+const models = [
+  { title: 'Image 3.0', tag: 'Try these', img: 'https://picsum.photos/seed/model1/400/240', selected: true },
+  { title: 'Studio Ghibli', tag: 'Try these', img: 'https://picsum.photos/seed/model2/400/240' },
+  { title: 'Realism 3.0', tag: 'Try these', img: 'https://picsum.photos/seed/model3/400/240' },
+  { title: 'Realism 3.2 (ultra)', tag: 'Try these', img: 'https://picsum.photos/seed/model4/400/240' },
+  { title: 'Realism 3.1', tag: 'Try these', img: 'https://picsum.photos/seed/model5/400/240' },
+];
 
-export class GeminiService {
-  private apiKey: string;
-  private baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent';
-  private nanoBananaUrl = 'https://api.replicate.com/v1/predictions';
+const communityModels = [
+  { title: '90s anime (brown)', img: 'https://picsum.photos/seed/community1/400/240' },
+  { title: 'GoGencrafter Carto...', img: 'https://picsum.photos/seed/community2/400/240' },
+  { title: 'Fantasy', img: 'https://picsum.photos/seed/community3/400/240' },
+  { title: 'Japanese', img: 'https://picsum.photos/seed/community4/400/240' },
+  { title: 'Monsters', img: 'https://picsum.photos/seed/community5/400/240' },
+];
 
-  constructor(apiKey: string) {
-    this.apiKey = apiKey;
-  }
+const additionalModels = [
+  { title: 'Olafs-More Eerie Pe...', img: 'https://picsum.photos/seed/additional1/400/240' },
+  { title: 'Misc Dall-E', img: 'https://picsum.photos/seed/additional2/400/240' },
+  { title: 'ConceptChar', img: 'https://picsum.photos/seed/additional3/400/240' },
+  { title: 'LACE', img: 'https://picsum.photos/seed/additional4/400/240' },
+  { title: 'Ultimate Muscle V...', img: 'https://picsum.photos/seed/additional5/400/240' },
+];
 
-  async generateLogo(
-    businessName: string,
-    businessDescription: string,
-    style: string = 'modern'
-  ): Promise<string> {
-    const prompt = `Create a professional logo for "${businessName}". ${businessDescription}. Style: ${style}. Clean, minimalist design suitable for business branding.`;
-    
+const exclusiveModels = [
+  { title: 'Logos', img: 'https://picsum.photos/seed/exclusive1/400/240', isPro: true },
+  { title: 'Textify', img: 'https://picsum.photos/seed/exclusive2/400/240', isPro: true },
+  { title: 'Realistic Details', img: 'https://picsum.photos/seed/exclusive3/400/240', isPro: true },
+  { title: 'Tattoos', img: 'https://picsum.photos/seed/exclusive4/400/240', isPro: true },
+  { title: 'Professional Port...', img: 'https://picsum.photos/seed/exclusive5/400/240', isPro: true },
+];
+
+const niches = [
+  'Technology', 'Fashion', 'Food & Beverage', 'Health & Wellness', 'Finance', 'Education', 
+  'Real Estate', 'Travel', 'Beauty & Cosmetics', 'Sports & Fitness', 'Entertainment', 
+  'Automotive', 'Home & Garden', 'E-commerce', 'Nonprofit', 'Marketing & Advertising', 
+  'Arts & Design', 'Photography', 'Consulting', 'Legal', 'Construction', 'Agriculture', 
+  'Gaming', 'Pets', "Children's Products"
+];
+
+const Card: React.FC<{
+  title: string; 
+  img: string; 
+  subtitle?: string; 
+  selected?: boolean; 
+  isPro?: boolean; 
+  suggestedName?: string; 
+  onCopied?: (name: string) => void;
+  onSelect?: () => void;
+}> = ({ title, img, subtitle, selected, isPro, suggestedName, onCopied, onSelect }) => {
+  const [copied, setCopied] = useState(false);
+  const nameToShow = suggestedName || title;
+
+  const handleCopy = async (e: React.MouseEvent) => {
+    e.stopPropagation();
     try {
-      const response = await fetch(this.nanoBananaUrl, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Token ${this.apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          version: "nano-banana-model-version", // This would be the actual model version
-          input: {
-            prompt: prompt,
-            width: 512,
-            height: 512,
-            num_outputs: 1,
-            guidance_scale: 7.5,
-            num_inference_steps: 50
-          }
-        })
-      });
+      await navigator.clipboard.writeText(nameToShow);
+      setCopied(true);
+      onCopied?.(nameToShow);
+      setTimeout(() => setCopied(false), 1200);
+    } catch {}
+  };
 
-      if (!response.ok) {
-        throw new Error(`Nano Banana API error: ${response.status}`);
-      }
+  const handleCardClick = () => {
+    onSelect?.();
+  };
 
-      const prediction: NanoBananaResponse = await response.json();
-      
-      // Poll for completion
-      return await this.pollForCompletion(prediction.id);
-    } catch (error) {
-      console.error('Error generating logo:', error);
-      // Fallback to a placeholder or default logo
-      return `https://picsum.photos/seed/${encodeURIComponent(businessName)}/512/512`;
-    }
-  }
+  return (
+    <div 
+      className={`bg-white rounded-xl border overflow-hidden shadow-sm hover:shadow-md transition-all cursor-pointer ${
+        selected ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200 hover:border-blue-300'
+      }`}
+      onClick={handleCardClick}
+    >
+      <div className="relative">
+        <img src={img} alt={title} className="w-full h-32 object-cover" />
+        {isPro && (
+          <span className="absolute top-2 right-2 bg-blue-600 text-white text-xs px-2 py-1 rounded-full font-semibold">PRO</span>
+        )}
+        {selected && (
+          <div className="absolute top-2 left-2 w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center">
+            <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+            </svg>
+          </div>
+        )}
+      </div>
+      <div className="p-3">
+        {subtitle && <p className="text-xs font-semibold text-blue-600 mb-1">{subtitle}</p>}
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-semibold text-gray-800 truncate flex-1 mr-2">{nameToShow}</h3>
+          <button
+            type="button"
+            onClick={handleCopy}
+            className="text-xs px-2 py-1 rounded bg-gray-100 text-gray-700 hover:bg-blue-100 hover:text-blue-700 border border-gray-200 transition-colors"
+            aria-label={`Copy ${nameToShow}`}
+          >
+            {copied ? 'Copied!' : 'Copy'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
-  private async pollForCompletion(predictionId: string): Promise<string> {
-    const maxAttempts = 30;
-    const pollInterval = 2000; // 2 seconds
+const SidebarItem: React.FC<{
+  icon: React.ReactNode; 
+  label: string; 
+  active?: boolean; 
+  hasSubmenu?: boolean; 
+  badge?: string;
+}> = ({ icon, label, active, hasSubmenu, badge }) => (
+  <div className={`flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition-colors ${
     
-    for (let attempt = 0; attempt < maxAttempts; attempt++) {
-      try {
-        const response = await fetch(`${this.nanoBananaUrl}/${predictionId}`, {
-          headers: {
-            'Authorization': `Token ${this.apiKey}`,
-          }
-        });
-        
-        if (!response.ok) {
-          throw new Error(`Polling error: ${response.status}`);
-        }
-        
-        const prediction: NanoBananaResponse = await response.json();
-        
-        if (prediction.status === 'succeeded' && prediction.output && prediction.output.length > 0) {
-          return prediction.output[0];
-        }
-        
-        if (prediction.status === 'failed') {
-          throw new Error(prediction.error || 'Logo generation failed');
-        }
-        
-        // Wait before next poll
-        await new Promise(resolve => setTimeout(resolve, pollInterval));
-      } catch (error) {
-        console.error(`Polling attempt ${attempt + 1} failed:`, error);
-        if (attempt === maxAttempts - 1) {
-          throw error;
-        }
-      }
-    }
-    
-    throw new Error('Logo generation timed out');
-  }
-
-  async generateBusinessNames(
-    fullName: string,
-    businessDescription: string,
-    niche: string,
-    count: number = 20
-  ): Promise<string[]> {
-    if (!this.apiKey) {
-      throw new Error('Gemini API key is required');
-    }
-
-    const prompt = this.buildPrompt(fullName, businessDescription, niche, count);
-
-    try {
-      const response = await fetch(`${this.baseUrl}?key=${this.apiKey}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: prompt
-            }]
-          }],
-          generationConfig: {
-            temperature: 0.9,
-            topK: 40,
-            topP: 0.95,
-            maxOutputTokens: 1024,
-          }
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`Gemini API error: ${response.status}`);
-      }
-
-      const data: GeminiResponse = await response.json();
-      
-      if (!data.candidates || data.candidates.length === 0) {
-        throw new Error('No suggestions generated');
-      }
-
-      const text = data.candidates[0].content.parts[0].text;
-      return this.parseBusinessNames(text);
-    } catch (error) {
-      console.error('Error generating business names:', error);
-      throw new Error('Failed to generate business name suggestions');
-    }
-  }
-
-  private buildPrompt(fullName: string, businessDescription: string, niche: string, count: number): string {
-    let prompt = `Generate ${count} creative and professional business names based on the following information:
-
-`;
-
-    if (fullName.trim()) {
-      prompt += `Owner/Founder Name: ${fullName.trim()}
-`;
-    }
-
-    if (businessDescription.trim()) {
-      prompt += `Business Description: ${businessDescription.trim()}
-`;
-    }
-
-    if (niche) {
-      prompt += `Industry/Niche: ${niche}
-`;
-    }
-
-    prompt += `
-Instructions for name generation:
-- If a founder name is provided, consider incorporating it creatively (e.g., "John's Tech Solutions", "Smith Innovations", "DoeVentures")
-- If business description is provided, extract key concepts and create names that reflect the business purpose
-- Combine the founder's name with business concepts when both are available
-- Create names that are memorable, brandable, and professional
-- Mix different naming approaches:
-  * Personal branding (using founder name)
-  * Descriptive names (based on what the business does)
-  * Abstract/creative names (inspired by the business concept)
-  * Compound words that combine relevant terms
-- Each name should be 1-4 words maximum
-- Names should be suitable for logo design and branding
-- Avoid generic or overly common names
-- Make names unique and distinctive
-
-Examples of good naming approaches:
-- Personal + Business: "Miller's Marketing Hub", "Johnson Digital"
-- Concept-based: "Pixel Perfect Studio", "Growth Catalyst"
-- Creative combinations: "TechFlow", "BrandCraft", "InnovateLab"
-
-Please provide ONLY the business names, one per line, without numbering, bullets, or additional text.`;
-
-    return prompt;
-  }
-
-  private parseBusinessNames(text: string): string[] {
-    return text
-      .split('\n')
-      .map(name => name.trim())
-      .filter(name => name.length > 0 && !name.match(/^\d+\.?\s/)) // Remove numbered items
-      .filter(name => name.length <= 50) // Reasonable length limit
-      .slice(0, 25); // Limit to 25 names max
-  }
-}
-
-// Create a singleton instance
-const geminiService = new GeminiService(import.meta.env.VITE_GEMINI_API_KEY || '');
-export default geminiService;
