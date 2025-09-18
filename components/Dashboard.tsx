@@ -45,11 +45,8 @@ const Card: React.FC<{title: string; img: string; subtitle?: string; selected?: 
       await navigator.clipboard.writeText(nameToShow);
       setCopied(true);
       onCopied?.(nameToShow);
-      alert(`Copied "${nameToShow}"`);
       setTimeout(() => setCopied(false), 1200);
-    } catch {
-      alert(`Copied "${nameToShow}"`);
-    }
+    } catch {}
   };
 
   return (
