@@ -36,7 +36,7 @@ const niches = [
   'Technology', 'Fashion', 'Food & Beverage', 'Health & Wellness', 'Finance', 'Education', 'Real Estate', 'Travel', 'Beauty & Cosmetics', 'Sports & Fitness', 'Entertainment', 'Automotive', 'Home & Garden', 'E-commerce', 'Nonprofit', 'Marketing & Advertising', 'Arts & Design', 'Photography', 'Consulting', 'Legal', 'Construction', 'Agriculture', 'Gaming', 'Pets', "Children's Products"
 ];
 
-const Card: React.FC<{title: string; img: string; subtitle?: string; selected?: boolean; isPro?: boolean; suggestedName?: string}> = ({ title, img, subtitle, selected, isPro, suggestedName }) => {
+const Card: React.FC<{title: string; img: string; subtitle?: string; selected?: boolean; isPro?: boolean; suggestedName?: string; onCopied?: (name: string) => void}> = ({ title, img, subtitle, selected, isPro, suggestedName, onCopied }) => {
   const [copied, setCopied] = useState(false);
   const nameToShow = suggestedName || title;
 
@@ -44,6 +44,7 @@ const Card: React.FC<{title: string; img: string; subtitle?: string; selected?: 
     try {
       await navigator.clipboard.writeText(nameToShow);
       setCopied(true);
+      onCopied?.(nameToShow);
       setTimeout(() => setCopied(false), 1200);
     } catch {}
   };
@@ -110,6 +111,7 @@ const Dashboard: React.FC = () => {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [promptsLeft, setPromptsLeft] = useState(4);
   const [isSuggesting, setIsSuggesting] = useState(false);
+  const [toast, setToast] = useState('');
 
   const handleBusinessToolClick = (tool: string) => {
     setSelectedBusinessTool(tool);
@@ -343,7 +345,6 @@ const Dashboard: React.FC = () => {
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-gray-900">Model Gallery</h2>
               <div className="flex items-center gap-4">
-                <button className="text-sm text-blue-600 hover:underline">View all features</button>
                 <div className="relative">
                   <input 
                     type="search" 
@@ -369,6 +370,7 @@ const Dashboard: React.FC = () => {
                     subtitle={model.tag}
                     selected={model.selected}
                     suggestedName={suggestionsLen ? suggestions[(tryOffset + index) % suggestionsLen] : undefined}
+                    onCopied={(name) => setToast(`Copied \"${name}\"`) || setTimeout(() => setToast(''), 1200)}
                   />
                 ))}
               </div>
@@ -386,6 +388,7 @@ const Dashboard: React.FC = () => {
                     title={model.title}
                     img={model.img}
                     suggestedName={suggestionsLen ? suggestions[(communityOffset + index) % suggestionsLen] : undefined}
+                    onCopied={(name) => setToast(`Copied \"${name}\"`) || setTimeout(() => setToast(''), 1200)}
                   />
                 ))}
               </div>
@@ -400,6 +403,7 @@ const Dashboard: React.FC = () => {
                     title={model.title}
                     img={model.img}
                     suggestedName={suggestionsLen ? suggestions[(additionalOffset + index) % suggestionsLen] : undefined}
+                    onCopied={(name) => setToast(`Copied \"${name}\"`) || setTimeout(() => setToast(''), 1200)}
                   />
                 ))}
               </div>
@@ -416,6 +420,7 @@ const Dashboard: React.FC = () => {
                     img={model.img}
                     isPro={model.isPro}
                     suggestedName={suggestionsLen ? suggestions[(exclusiveOffset + index) % suggestionsLen] : undefined}
+                    onCopied={(name) => setToast(`Copied \"${name}\"`) || setTimeout(() => setToast(''), 1200)}
                   />
                 ))}
               </div>
@@ -423,6 +428,9 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
       </div>
+      {toast && (
+        <div className="fixed bottom-4 right-4 bg-gray-800 text-white text-sm px-3 py-2 rounded-lg shadow-lg">{toast}</div>
+      )}
     </section>
   );
 };
