@@ -106,7 +106,7 @@ const Dashboard: React.FC = () => {
 
   const titleCase = (s: string) => s.replace(/\w\S*/g, (t) => t.charAt(0).toUpperCase() + t.slice(1).toLowerCase());
 
-  const buildSuggestions = () => {
+  const buildSuggestions = (targetCount: number) => {
     const base = `${fullName} ${businessDescription} ${niche}`.trim();
     const h = hashString(base || 'default');
 
@@ -123,42 +123,54 @@ const Dashboard: React.FC = () => {
 
     const nicheWords = (niche || '').toLowerCase().split(/\s*&\s*|\s+/).filter(Boolean);
 
-    const keywords = Array.from(new Set([...(nicheWords || []), ...descWords])).slice(0, 5);
+    const keywords = Array.from(new Set([...(nicheWords || []), ...descWords]));
     const key = titleCase(keywords[0] || 'Brand');
     const key2 = titleCase(keywords[1] || 'Studio');
 
-    const suffixes = ['Labs','Studio','Works','Hub','Co','Solutions','Space','Forge','Nest','Pulse','Craft','Collective','Designs','Factory'];
-    const prefixes = ['Neo','Blue','Prime','Bright','Smart','Quantum','Ever','True','Ultra','Hyper','Aero','Astra','Pixel','Vivid'];
-
-    const pick = (arr: string[], n: number) => arr[(h + n) % arr.length];
+    const suffixes = ['Labs','Studio','Works','Hub','Co','Solutions','Space','Forge','Nest','Pulse','Craft','Collective','Designs','Factory','Partners','Group','Concepts','Dynamics'];
+    const prefixes = ['Neo','Blue','Prime','Bright','Smart','Quantum','Ever','True','Ultra','Hyper','Aero','Astra','Pixel','Vivid','Nova','Turbo','Meta','Cloud','Solid'];
 
     const namesSet = new Set<string>();
-    const push = (s: string) => namesSet.add(s.replace(/\s+/g, ' ').trim());
+    const push = (s: string) => {
+      const cleaned = s.replace(/\s+/g, ' ').trim();
+      if (cleaned) namesSet.add(titleCase(cleaned));
+    };
 
     const f = titleCase(first);
     const l = titleCase(last);
-    const p1 = pick(prefixes, 1);
-    const p2 = pick(prefixes, 2);
-    const s1 = pick(suffixes, 3);
-    const s2 = pick(suffixes, 4);
 
-    push(`${key} ${s1}`);
-    push(`${key2} ${s2}`);
-    if (f) push(`${f} ${s1}`);
-    if (l) push(`${l} ${s2}`);
-    if (f && key) push(`${f} ${key}`);
-    if (l && key2) push(`${key2} ${l}`);
-    push(`${p1}${key}`);
-    push(`${p2}${key2}`);
-    if (initials) push(`${initials} ${s1}`);
-    if (f && l) push(`${f} & ${l} ${pick(suffixes, 5)}`);
+    let i = 0;
+    while (namesSet.size < targetCount && i < targetCount * 10) {
+      const sA = suffixes[(h + i) % suffixes.length];
+      const sB = suffixes[(h + i + 3) % suffixes.length];
+      const pA = prefixes[(h + i) % prefixes.length];
+      const pB = prefixes[(h + i + 5) % prefixes.length];
+      const kA = titleCase(keywords[(i) % Math.max(1, keywords.length)] || key);
+      const kB = titleCase(keywords[(i + 1) % Math.max(1, keywords.length)] || key2);
 
-    return Array.from(namesSet).map(titleCase).slice(0, 10);
+      push(`${kA} ${sA}`);
+      push(`${kB} ${sB}`);
+      push(`${pA}${kA}`);
+      push(`${pB}${kB}`);
+      if (f) push(`${f} ${sB}`);
+      if (l) push(`${l} ${sA}`);
+      if (f && kA) push(`${f} ${kA}`);
+      if (l && kB) push(`${kB} ${l}`);
+      if (initials) push(`${initials} ${sA}`);
+      if (f && l) push(`${f} & ${l} ${sB}`);
+
+      // Add a numeric variant for extra uniqueness
+      push(`${kA} ${sA} ${((h + i) % 9) + 1}`);
+      i++;
+    }
+
+    return Array.from(namesSet).slice(0, targetCount);
   };
 
   const handleSuggest = () => {
     setIsSuggesting(true);
-    const list = buildSuggestions();
+    const totalCards = models.length + communityModels.length + additionalModels.length + exclusiveModels.length;
+    const list = buildSuggestions(totalCards);
     setSuggestions(list);
     setPromptsLeft((v) => (v > 0 ? v - 1 : 0));
     setIsSuggesting(false);
