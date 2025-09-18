@@ -32,6 +32,10 @@ const exclusiveModels = [
   { title: 'Professional Port...', img: 'https://picsum.photos/seed/exclusive5/400/240', isPro: true },
 ];
 
+const niches = [
+  'Technology', 'Fashion', 'Food & Beverage', 'Health & Wellness', 'Finance', 'Education', 'Real Estate', 'Travel', 'Beauty & Cosmetics', 'Sports & Fitness', 'Entertainment', 'Automotive', 'Home & Garden', 'E-commerce', 'Nonprofit', 'Marketing & Advertising', 'Arts & Design', 'Photography', 'Consulting', 'Legal', 'Construction', 'Agriculture', 'Gaming', 'Pets', "Children's Products"
+];
+
 const Card: React.FC<{title: string; img: string; subtitle?: string; selected?: boolean; isPro?: boolean}> = ({ title, img, subtitle, selected, isPro }) => (
   <div className={`bg-white rounded-xl border overflow-hidden shadow-sm hover:shadow-md transition-all cursor-pointer ${selected ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200'}`}>
     <div className="relative">
@@ -77,6 +81,9 @@ const Dashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('Suggest Business Name');
     const [showGenerationPanel, setShowGenerationPanel] = useState(false);
   const [selectedBusinessTool, setSelectedBusinessTool] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [businessDescription, setBusinessDescription] = useState('');
+  const [niche, setNiche] = useState('');
 
   const handleBusinessToolClick = (tool: string) => {
     setSelectedBusinessTool(tool);
@@ -167,8 +174,45 @@ const Dashboard: React.FC = () => {
                 Generate Logo
               </button>
             </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Full name</label>
+              <input
+                type="text"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="John Doe"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Business description</label>
+              <textarea
+                rows={4}
+                value={businessDescription}
+                onChange={(e) => setBusinessDescription(e.target.value)}
+                placeholder="Describe what your business or brand is about"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600 resize-none"
+              />
+            </div>
+
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Niche</label>
+              <select
+                value={niche}
+                onChange={(e) => setNiche(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+              >
+                <option value="">Select a niche</option>
+                {niches.map((n) => (
+                  <option key={n} value={n}>{n}</option>
+                ))}
+              </select>
+            </div>
+
             <button className="w-full bg-blue-600 text-white text-base font-bold px-4 py-3 rounded-full hover:bg-blue-700 transition-colors mb-3">
-              ✨ GENERATE
+              Suggest
             </button>
             <p className="text-xs text-gray-500 text-center">4 prompts left</p>
           </div>
