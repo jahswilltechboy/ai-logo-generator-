@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import geminiService from '../src/services/geminiService';
 
 const models = [
   { title: 'Image 3.0', tag: 'Try these', img: 'https://picsum.photos/seed/model1/400/240', selected: true },
@@ -111,6 +112,7 @@ const Dashboard: React.FC = () => {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [promptsLeft, setPromptsLeft] = useState(4);
   const [isSuggesting, setIsSuggesting] = useState(false);
+  const [error, setError] = useState('');
   const [toast, setToast] = useState('');
 
   const handleBusinessToolClick = (tool: string) => {
@@ -191,13 +193,45 @@ const Dashboard: React.FC = () => {
     return Array.from(namesSet).slice(0, targetCount);
   };
 
-  const handleSuggest = () => {
+  const handleSuggest = async () => {
+    if (!fullName.trim() && !businessDescription.trim()) {
+      setError('Please provide at least your name or business description');
+      return;
+    }
+
     setIsSuggesting(true);
-    const totalCards = models.length + communityModels.length + additionalModels.length + exclusiveModels.length;
-    const list = buildSuggestions(totalCards);
-    setSuggestions(list);
-    setPromptsLeft((v) => (v > 0 ? v - 1 : 0));
-    setIsSuggesting(false);
+    setError('');
+
+    try {
+      const totalCards = models.length + communityModels.length + additionalModels.length + exclusiveModels.length;
+      const aiSuggestions = await geminiService.generateBusinessNames(
+        fullName,
+        businessDescription,
+        niche,
+        totalCards
+      );
+      
+      // If AI doesn't return enough suggestions, fill with fallback suggestions
+      if (aiSuggestions.length < totalCards) {
+        const fallbackSuggestions = buildSuggestions(totalCards - aiSuggestions.length);
+        setSuggestions([...aiSuggestions, ...fallbackSuggestions]);
+      } else {
+        setSuggestions(aiSuggestions);
+      }
+      
+      setPromptsLeft((v) => (v > 0 ? v - 1 : 0));
+    } catch (err) {
+      console.error('AI suggestion failed:', err);
+      setError('AI suggestion failed. Using fallback suggestions.');
+      
+      // Fallback to original logic
+      const totalCards = models.length + communityModels.length + additionalModels.length + exclusiveModels.length;
+      const list = buildSuggestions(totalCards);
+      setSuggestions(list);
+      setPromptsLeft((v) => (v > 0 ? v - 1 : 0));
+    } finally {
+      setIsSuggesting(false);
+    }
   };
 
 
@@ -333,8 +367,14 @@ const Dashboard: React.FC = () => {
               disabled={isSuggesting}
               className={`w-full text-white text-base font-bold px-4 py-3 rounded-full transition-colors mb-3 ${isSuggesting ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
             >
-              {isSuggesting ? 'Suggesting…' : 'Suggest'}
+              {isSuggesting ? 'AI is thinking...' : 'Generate AI Suggestions'}
             </button>
+
+            {error && (
+              <div className="mb-3 p-2 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-xs text-red-600">{error}</p>
+              </div>
+            )}
 
             <p className="text-xs text-gray-500 text-center">{promptsLeft} prompts left</p>
           </div>
@@ -360,7 +400,14 @@ const Dashboard: React.FC = () => {
 
             {/* Try these section */}
             <div className="mb-8">
-              <h3 className="text-sm font-semibold text-gray-700 mb-4">Try these</h3>
+              <h3 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                ✨ AI Generated Suggestions
+                {suggestions.length > 0 && (
+                  <span className="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full">
+                    {suggestions.length} names
+                  </span>
+                )}
+              </h3>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 {models.map((model, index) => (
                   <Card
